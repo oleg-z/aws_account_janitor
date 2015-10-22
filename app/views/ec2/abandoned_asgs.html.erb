@@ -1,0 +1,48 @@
+<ol class="breadcrumb">
+  <li><a href="#">EC2</a></li>
+  <li><a href="#">Abandoned ASGs</a></li>
+</ol>
+
+<div style='padding: 5px'>
+  <div>
+    <ul id='asgs' class="nav nav-tabs" role="tablist">
+      <% @abandoned_asgs.keys.each_with_index do |region, i| %>
+        <li role="presentation" class="<%= i == 0 ? "active": "" %>">
+          <a href="#<%= region %>" aria-controls="<%= region %>" role="tab" data-toggle="tab"><%= region %> <span class="label label-default"> <%= @abandoned_asgs[region].size %></span> </a>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="tab-content">
+      <% @abandoned_asgs.keys.each_with_index do |region, i| %>
+        <div role="tabpanel" class="tab-pane <%= i == 0 ? "active": "" %>" id="<%= region %>">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>ASG Name</th>
+                <th>Launch Time</th>
+                <th>Tags</th>
+              </tr>
+            </thead>
+            <% @abandoned_asgs[region].each do |asg| %>
+              <tr>
+                <td>
+                  <a href='https://console.aws.amazon.com/ec2/autoscaling/home?region=us-east-1#AutoScalingGroups:view=details;filter=<%= asg["auto_scaling_group_name"] %>'>
+                    <%= asg["auto_scaling_group_name"] %>
+                  </a> </td>
+                <td> <%= Time.parse(asg["created_time"]).strftime("%F") %> </td>
+                <td>
+                  <% asg["tags"].each do |t| %>
+                    <% tag_value = t["value"].size < 50 ? t["value"] : "#{t["value"][0...50]}..." %>
+                    <%= "#{t["key"]}: #{tag_value}" %>
+                    <br>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </table>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

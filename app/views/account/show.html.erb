@@ -1,0 +1,24 @@
+<div>
+  <form action='/account/<%= @account.id %>' method='POST' style='padding-left: 30%; padding-right: 30%' >
+    <div class="form-group">
+      <label for="alias">Account Alias</label>
+        <input type="text" class="form-control" name="alias" value="<%= @account.alias %>">
+    </div>
+    <div class="form-group">
+      <label for="access_key">Access Key</label>
+      <input type="text" class="form-control" name="access_key" value="<%= @account.access_key %>">
+    </div>
+    <div class="form-group">
+      <label for="secret_key">Secret Key</label>
+        <input type="password" class="form-control" name="secret_key" value="                   ">
+    </div>
+    <div class="form-group">
+      <label for="secret_key">Role</label>
+        <input type="text" class="form-control" name="role" value="<%= @account.role %>">
+    </div>
+
+    <button type="submit" class="btn btn-default">Update</button>
+    <input id='submit' type="hidden" name="_method" value="PUT">
+    <button type="submit" class="btn btn-danger" onclick='$("#submit").attr("value", "DELETE"); '>Delete</button>
+  </form>
+</div>

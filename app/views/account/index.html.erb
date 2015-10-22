@@ -1,0 +1,25 @@
+<ol class="breadcrumb">
+  <li><a href="#">Settings</a></li>
+  <li><a href="#">Accounts</a></li>
+</ol>
+
+<div style='padding: 5px'>
+  <div>
+    <%= link_to "Add Account", { action: :new }, {type:"button", class: "btn btn-default"} %>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Account Name</th>
+          <th>Access Key</th>
+        </tr>
+      </thead>
+      <body>
+        <% @accounts.each do |a| %>
+          <tr>
+            <td> <%= link_to a.alias, "account/#{a.id}" %> </td>
+            <td> <%= a.access_key %> </td>
+          </tr>
+        <% end %>
+      </body>
+  </div>
+</div>

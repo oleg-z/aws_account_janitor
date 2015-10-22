@@ -1,0 +1,58 @@
+<ol class="breadcrumb">
+  <li><a href="#">Dynamo DB</a></li>
+  <li><a href="#">Unused Tables</a></li>
+</ol>
+
+<div style='padding: 5px'>
+  <div>
+    <ul id='asgs' class="nav nav-tabs" role="tablist">
+      <% @data_by_region.keys.each_with_index do |region, i| %>
+        <li role="presentation" class="<%= i == 0 ? "active": "" %>">
+          <a href="#<%= region %>" aria-controls="<%= region %>" role="tab" data-toggle="tab"><%= region %> <span class="label label-default"> <%= @data_by_region[region].size %></span> </a>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="tab-content">
+      <% @data_by_region.keys.each_with_index do |region, i| %>
+        <div role="tabpanel" class="tab-pane <%= i == 0 ? "active": "" %>" id="<%= region %>">
+          <h3>Spending rate in $/day <span class="label label-default"> <%= @cost_by_region[region].round(2) %></span></h3>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>ASG Name</th>
+                <th>Read IOPS</th>
+                <th>Write IOPS</th>
+                <th>Item Count</th>
+                <th>$/day</th>
+                <th>Launch Time</th>
+                <th>Tags</th>
+              </tr>
+            </thead>
+            <% @data_by_region[region].each do |item| %>
+              <tr>
+                <td>
+                  <a href='<%= ddb_link(region, item) %>'>
+                    <%= item["table_name"] %>
+                  </a>
+                </td>
+                <td> <%= item["provisioned_throughput"]["read_capacity_units"] %></td>
+                <td> <%= item["provisioned_throughput"]["write_capacity_units"] %></td>
+                <td> <%= item["item_count"] %> </td>
+                <td> <%= item["daily_cost"].to_f.round(2) %> </td>
+                <td> <%= Time.parse(item["creation_date_time"]).strftime("%F") %> </td>
+                <td>
+                  <% item["tags"].to_a.each do |t| %>
+                    <% tag_value = t["value"].size < 50 ? t["value"] : "#{t["value"][0...50]}..." %>
+                    <%= "#{t["key"]}: #{tag_value}" %>
+                    <br>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </table>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

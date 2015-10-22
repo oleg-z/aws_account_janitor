@@ -1,0 +1,57 @@
+<ol class="breadcrumb">
+  <li><a href="#">EC2</a></li>
+  <li><a href="#">Abandoned Volumes</a></li>
+</ol>
+
+<div style='padding: 5px'>
+  <div>
+    <ul id='volumes' class="nav nav-tabs" role="tablist">
+      <% @abandoned_volumes.keys.each_with_index do |region, i| %>
+        <li role="presentation" class="<%= i == 0 ? "active": "" %>">
+          <a href="#<%= region %>" aria-controls="<%= region %>" role="tab" data-toggle="tab"><%= region %> <span class="label label-default"> <%= @abandoned_volumes[region].size %></span> </a>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="tab-content">
+      <% @abandoned_volumes.keys.each_with_index do |region, i| %>
+        <div role="tabpanel" class="tab-pane <%= i == 0 ? "active": "" %>" id="<%= region %>">
+        <h3>Spending rate in $/day <span class="label label-default"> <%= @spending_rate_by_region[region].round(2) %></span></h3>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Volume Id</th>
+                <th>Create Time</th>
+                <th>Type</th>
+                <th>Size</th>
+                <th>IOPS</th>
+                <th>$/day</th>
+                <th>Tags</th>
+              </tr>
+            </thead>
+            <% @abandoned_volumes[region].each do |volume| %>
+              <tr>
+                <td>
+                  <a href='https://console.aws.amazon.com/ec2/v2/home?region=<%= region %>#Volumes:search=<%= volume["volume_id"] %>'>
+                    <%= volume["volume_id"] %>
+                  </a> </td>
+                <td> <%= Time.parse(volume["create_time"]).strftime("%F") %> </td>
+                <td> <%= volume["volume_type"] %> </td>
+                <td> <%= volume["size"] %> </td>
+                <td> <%= volume["iops"] %> </td>
+                <td> <%= volume["cost"] %> </td>
+                <td>
+                  <% volume["tags"].to_a.each do |t| %>
+                    <% tag_value = t["value"].size < 50 ? t["value"] : "#{t["value"][0...50]}..." %>
+                    <%= "#{t["key"]}: #{tag_value}" %>
+                    <br>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </table>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
