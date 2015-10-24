@@ -2,21 +2,28 @@
   <form action='/account' method='POST' style='padding-left: 30%; padding-right: 30%' >
     <div class="form-group">
       <label for="alias">Account Alias</label>
-        <input type="text" class="form-control" name="alias" placeholder="">
+      <input type="text" class="form-control" name="alias" placeholder="">
     </div>
     <div class="form-group">
       <label for="access_key">Access Key</label>
-      <input type="text" class="form-control" name="access_key" placeholder="">
+      <input type="text" class="form-control" name="access_key" placeholder="<access key>">
     </div>
     <div class="form-group">
       <label for="secret_key">Secret Key</label>
-        <input type="password" class="form-control" name="secret_key" placeholder="">
+      <input type="password" class="form-control" name="secret_key" placeholder="<secret key>">
     </div>
     <div class="form-group">
       <label for="secret_key">Role</label>
-        <input type="text" class="form-control" name="role" placeholder="">
+      <input type="text" class="form-control" name="role" placeholder="">
     </div>
-
+    <div class="form-group">
+      <label for="secret_key">Notification Email</label>
+      <input type="text" class="form-control" name="email" placeholder="<email for sending notifications>">
+    </div>
+    <div class="form-group">
+      <label for="secret_key">Account Number</label>
+      <input type="text" class="form-control" name="identifier" placeholder="">
+    </div>
     <button type="submit" class="btn btn-default">Create</button>
   </form>
 </div>

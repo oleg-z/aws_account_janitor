@@ -5,13 +5,15 @@
 
 <div style='padding: 5px'>
   <div>
-    <ul id='instances' class="nav nav-tabs" role="tablist">
+    <ul id='regions' class="nav nav-tabs" role="tablist">
       <% @abandoned_instances.keys.each_with_index do |region, i| %>
-        <li role="presentation" class="<%= i == 0 ? "active": "" %>">
+        <li region='<%= region %>' role="presentation" class="<%= i == 0 ? "active": "" %>">
           <a href="#<%= region %>" aria-controls="<%= region %>" role="tab" data-toggle="tab"><%= region %> <span class="label label-default"> <%= @abandoned_instances[region].size %></span> </a>
         </li>
       <% end %>
     </ul>
+
+    <%= render "shared/item_tag_dialog" %>
 
     <div class="tab-content">
       <% @abandoned_instances.keys.each_with_index do |region, i| %>
@@ -20,6 +22,8 @@
           <table class="table table-striped">
             <thead>
               <tr>
+                <th></th>
+                <th></th>
                 <th>Instance Id</th>
                 <th>Instance Type</th>
                 <th>Launch Time</th>
@@ -29,6 +33,10 @@
             </thead>
             <% @abandoned_instances[region].each do |instances| %>
               <tr>
+                <td><%= render "shared/item_menu" %></td>
+                <td>
+                  <%= render partial: "shared/item_checkbox", locals: { aws_object_id: instances["instance_id"] } %>
+                </td>
                 <td>
                   <a href='https://console.aws.amazon.com/ec2/v2/home?region=<%= region %>#Instances:search=<%= instances["instance_id"] %>'>
                     <%= instances["instance_id"] %>

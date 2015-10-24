@@ -9,7 +9,7 @@ namespace :aws_data do
   task :fetch => [:environment, :ec2] do
   end
 
-  task :ec2 => [:ddb_abandoned_tables ] do # :ec2_abandoned_volumes, :abandoned_instances, :ec2_abandoned_asgs, :ec2_daily_spending_rate] do
+  task :ec2 => [:rds_orphaned_dbs, :ddb_abandoned_tables, :ec2_abandoned_volumes, :abandoned_instances, :ec2_abandoned_asgs, :ec2_daily_spending_rate] do
   end
 
   def switch_account(account, region)
@@ -132,6 +132,20 @@ namespace :aws_data do
       r.data_type = :ddb_abandoned_tables
       r.aws_region = region
       r.data = acc.ddb_abandoned_tables
+      r.save
+    }
+  end
+
+  task :rds_orphaned_dbs do
+    process_accounts { |region, account|
+      log_action(account, region, "Getting orphaned rds DBs")
+      acc = AwsAccountJanitor::Account.new(region: region)
+
+      r = AwsRecord.new()
+      r.account_id = account.id
+      r.data_type = :rds_orphaned_tables
+      r.aws_region = region
+      r.data = acc.rds_orphaned_dbs
       r.save
     }
   end

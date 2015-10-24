@@ -3,8 +3,6 @@ class AccountController < JanitorController
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
 
-  skip_before_action :verify_authenticity_token
-
   def index
     @accounts = AwsAccount.all()
   end
@@ -16,13 +14,15 @@ class AccountController < JanitorController
   def create
     a = AwsAccount.new
     fail "Alias couldn't be empty" if params[:alias].to_s.empty?
-    a.alias = params[:alias]
+    a.alias = params[:alias].strip
     a.access_key = params[:access_key]
     a.secret_key = params[:secret_key]
     a.role = params[:role]
+    a.identifier = params[:identifier]
+    a.email = params[:email]
     a.save
     #render text: "Account has been created!"
-    redirect_to action: index
+    redirect_to action: :index
   end
 
   def update
