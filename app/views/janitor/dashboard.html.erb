@@ -1,0 +1,33 @@
+<ol class="breadcrumb">
+  <li><a href="#">Dashboard</a></li>
+</ol>
+
+<% column = 0 %>
+<% @review_required.each do |account_id, data| %>
+  <% if column == 0 %>
+  <div style='padding: 5px' class="row">
+  <% end %>
+    <div class="list-group col-md-2" style='padding-left: 15px'>
+      <a href="#" class="list-group-item disabled">
+        <%= AwsAccount.find(account_id).alias %>
+      </a>
+        <% data.sort_by { |_, counter| counter }.reverse.to_h.each do |item, counter| %>
+          <% next unless counter > 0 %>
+          <%=
+            route_info = @data_type_controller_map[item.to_s]
+            link_to(
+              { controller: route_info[:controller], action: route_info[:action], account_id: account_id },
+              :class => "list-group-item"
+            ) do
+                raw("<span class='badge'>#{counter}</span>")  +
+                route_info[:action].humanize.titleize
+            end
+          %>
+        <% end %>
+    </div>
+
+  <% column = (column + 1) % 6 %>
+  <% if column == 0 %>
+  </div>
+  <% end %>
+<% end %>

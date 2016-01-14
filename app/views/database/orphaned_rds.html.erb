@@ -1,0 +1,71 @@
+<ol class="breadcrumb">
+  <li><a href="#">RDS</a></li>
+  <li><a href="#">Orphaned Tables</a></li>
+</ol>
+
+<div style='padding: 5px'>
+
+  <% if @data_by_region.keys.empty? %>
+    <div class="alert alert-info" role="alert">Congratulations! You have no orhaned RDS instances.</div>
+  <% end %>
+
+  <div>
+    <ul id='regions' class="nav nav-tabs" role="tablist">
+      <% @data_by_region.keys.each_with_index do |region, i| %>
+        <li region='<%= region %>' role="presentation" class="<%= i == 0 ? "active": "" %>">
+          <a href="#<%= region %>" aria-controls="<%= region %>" role="tab" data-toggle="tab"><%= region %> <span class="label label-default"> <%= @data_by_region[region].size %></span> </a>
+        </li>
+      <% end %>
+    </ul>
+
+    <%= render "shared/item_tag_dialog" %>
+
+    <div class="tab-content">
+      <% @data_by_region.keys.each_with_index do |region, i| %>
+        <div role="tabpanel" class="tab-pane <%= i == 0 ? "active": "" %>" id="<%= region %>">
+          <h3>Spending rate in $/day <span class="label label-default"> <%= @cost_by_region[region].round(2) %></span></h3>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th>DB Name</th>
+                <th>Class</th>
+                <th>IOPS</th>
+                <th>MultiAZ</th>
+                <th>$/day</th>
+                <th>Launch Time</th>
+                <th>Tags</th>
+              </tr>
+            </thead>
+            <% @data_by_region[region].each do |item| %>
+              <tr>
+                <td><%= render partial: "shared/item_menu" %></td>
+                <td>
+                  <%= render partial: "shared/item_checkbox", locals: { aws_object_id:  item["db_instance_identifier"] } %>
+                </td>
+                <td>
+                  <a href='<%= rds_link(region, item) %>'>
+                    <%= item["db_instance_identifier"] %>
+                  </a>
+                </td>
+                <td> <%= item["db_instance_class"] %> </td>
+                <td> <%= item["iops"] %> </td>
+                <td> <%= item["multi_az"] %> </td>
+                <td> <%= item["daily_cost"].to_f.round(2) %> </td>
+                <td> <%= format_time(item["instance_create_time"]) %> </td>
+                <td>
+                  <% item["tags"].to_a.each do |t| %>
+                    <% tag_value = t["value"].size < 50 ? t["value"] : "#{t["value"][0...50]}..." %>
+                    <%= "#{t["key"]}: #{tag_value}" %>
+                    <br>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </table>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

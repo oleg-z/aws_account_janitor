@@ -17,6 +17,7 @@
 /tmp
 
 # tmp files
+app/assets/stylesheets/.sass-cache
 
 
 # Elastic Beanstalk Files
