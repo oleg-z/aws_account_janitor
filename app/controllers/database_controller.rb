@@ -4,24 +4,29 @@ class DatabaseController < JanitorController
   protect_from_forgery with: :exception
   skip_before_action :verify_authenticity_token
 
-  def ddb_orphaned
+  def orphaned_ddb
     @cost_by_region = {}
     @data_by_region = {}
+    @object_type = ""
 
     AWS_REGIONS.each do |region|
-      @data_by_region[region] = region_abandoned_ddb(region).sort_by { |i| i["creation_date_time"] }
+      data = region_abandoned_ddb(region).sort_by { |i| i["creation_date_time"] }
+      next if data.empty?
+      @data_by_region[region] = data
       @cost_by_region[region] = 0
       @data_by_region[region].each { |i| @cost_by_region[region] += i["daily_cost"].to_f }
     end
   end
 
-  def rds_orphaned
+  def orphaned_rds
     @cost_by_region = {}
     @data_by_region = {}
     @object_type = Aws::RDS::Types::DBInstance
 
     AWS_REGIONS.each do |region|
-      @data_by_region[region] = region_rds_orphaned(region).sort_by { |i| i["instance_create_time"] }
+      data = region_rds_orphaned(region).sort_by { |i| i["instance_create_time"] }
+      next if data.empty?
+      @data_by_region[region] = data
       @cost_by_region[region] = 0
     end
   end
@@ -30,7 +35,7 @@ class DatabaseController < JanitorController
 
   def region_abandoned_ddb(region)
     r = AwsRecord
-      .where(account_id: current_account.id, aws_region: region, data_type: :rds_orphaned_tables)
+      .where(account_id: current_account.id, aws_region: region, data_type: :ddb_abandoned_tables)
       .order("created_at DESC")
       .limit(1)
       .last

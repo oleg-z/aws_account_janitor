@@ -4,33 +4,39 @@ class Ec2Controller < JanitorController
   protect_from_forgery with: :exception
   skip_before_action :verify_authenticity_token
 
-  def abandoned_instances
+  def orphaned_instances
     @abandoned_instances = {}
     @spending_rate_by_region = {}
     @object_type = Aws::EC2::Types::Instance
 
     AWS_REGIONS.each do |region|
-      @abandoned_instances[region] = region_abandoned_instances(region).sort_by { |i| i["launch_time"] }
+      data = region_abandoned_instances(region).sort_by { |i| i["launch_time"] }
+      next if data.empty?
+      @abandoned_instances[region] = data
       @spending_rate_by_region[region] = 0
-      @abandoned_instances[region].each { |i| @spending_rate_by_region[region] += i["daily_cost"].to_f }
+      data.each { |i| @spending_rate_by_region[region] += i["daily_cost"].to_f }
     end
   end
 
-  def abandoned_asgs
+  def orphaned_asgs
     @abandoned_asgs = {}
     @object_type = Aws::AutoScaling::Types::AutoScalingGroup
     AWS_REGIONS.each do |region|
-      @abandoned_asgs[region] = region_abandoned_asgs(region)
+      data = region_abandoned_asgs(region)
+      next if data.empty?
+      @abandoned_asgs[region] = data
     end
   end
 
-  def abandoned_volumes
+  def orphaned_volumes
     @cost_by_region = {}
     @data_by_region = {}
     @object_type = Aws::EC2::Types::Volume
 
     AWS_REGIONS.each do |region|
-      @data_by_region[region] = region_abandoned_volumes(region)
+      data = region_abandoned_volumes(region)
+      next if data.empty?
+      @data_by_region[region] = data
       @cost_by_region[region] = 0
       @data_by_region[region].each { |v| @cost_by_region[region] += v["cost"].to_f }
     end
@@ -76,10 +82,5 @@ class Ec2Controller < JanitorController
       .last
     return [] unless r
     r.data
-  end
-
-  def current_account
-    @current_account = params[:account_id] ? AwsAccount.find(params[:account_id]) : AwsAccount.all.first
-    @current_account
   end
 end

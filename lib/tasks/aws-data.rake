@@ -9,7 +9,55 @@ namespace :aws_data do
   task :fetch => [:environment, :ec2] do
   end
 
-  task :ec2 => [:rds_orphaned_dbs, :ddb_abandoned_tables, :ec2_abandoned_volumes, :abandoned_instances, :ec2_abandoned_asgs, :ec2_daily_spending_rate] do
+  task :ec2 do
+    loop do
+      AwsAccount.all.each do |account|
+        @credentials = {}
+        AWS_REGIONS.each do |region|
+          begin
+            switch_account(account, region)
+            janitor = AwsAccountJanitor::Account.new(region: region, account_number: account.identifier)
+
+            janitor.managed_objects.each do |object|
+              object.orphaned.each do |data_label, data|
+                r = AwsRecord.new(
+                  data_type:  data_label,
+                  account_id: account.id,
+                  aws_region: janitor.region,
+                  data:       data
+                )
+                r.save
+              end
+            end
+
+
+            #log_action(account, region, "Getting ec2 orphaned ASGs")
+            #orphaned_asgs(account, janitor)
+            #
+            #log_action(account, region, "Getting ec2 daily spending rate")
+            #instances_spending_rate(account, janitor)
+            #
+            #log_action(account, region, "Getting ec2 abandoned volumes")
+            #orphaned_volumes(account, janitor)
+            #
+            #log_action(account, region, "Getting ddb tables")
+            #orphaned_ddb_tables(account, janitor)
+          rescue Aws::EC2::Errors::AuthFailure => _e
+            Rails.logger.error("Failed to switch to '#{account.alias}' account")
+          rescue Aws::AutoScaling::Errors::InvalidClientTokenId => _e
+            Rails.logger.error("Failed to switch to '#{account.alias}' account")
+          rescue => e
+            log_action(account, region, "Failed to complete action block: #{e}")
+          end
+        end
+      end
+
+      sleep 60
+    end
+  end
+
+  def log_action(account, region, message)
+    Rails.logger.info("#{account.alias}@#{region}: #{message}")
   end
 
   def switch_account(account, region)
@@ -42,111 +90,53 @@ namespace :aws_data do
     end
   end
 
-  def log_action(account, region, message)
-    Rails.logger.info("#{account.alias}@#{region}: #{message}")
+  def instances_spending_rate(account, janitor)
+    r = AwsRecord.new(
+      data_type:  :ec2_daily_rate,
+      account_id: account.id,
+      aws_region: janitor.region,
+      data:       janitor.daily_spending_rate
+    )
+    r.save
   end
 
-  def process_accounts
-    @credentials = {}
-    AwsAccount.all.each do |account|
-      AWS_REGIONS.each do |region|
-        begin
-          switch_account(account, region)
-          yield region, account
-        rescue Aws::EC2::Errors::AuthFailure => _e
-          Rails.logger.info("Failed to switch to '#{account.alias}' account")
-        rescue Aws::AutoScaling::Errors::InvalidClientTokenId => _e
-          Rails.logger.info("Failed to switch to '#{account.alias}' account")
-        rescue => e
-          log_action(account, region, "Failed to complete action block: #{e}")
-        end
-      end
-    end
+  def orphaned_asgs(account, janitor)
+    r = AwsRecord.new(
+      data_type:  :ec2_abandoned_asgs,
+      account_id: account.id,
+      aws_region: janitor.region,
+      data:       janitor.abandoned_asgs
+    )
+    r.save
   end
 
-  task :abandoned_instances do
-    process_accounts { |region, account|
-      log_action(account, region, "Getting abandoned instances")
-      acc = AwsAccountJanitor::Account.new(region: region)
-
-      data =
-        acc
-        .abandoned_instances
-        .sort_by { |i| i["launch_time"] }
-
-      r = AwsRecord.new()
-      r.data_type = :ec2_abandoned_instances
-      r.account_id = account.id
-      r.aws_region = region
-      r.data = data
-      r.save
-    }
+  def orphaned_volumes(account, janitor)
+    r = AwsRecord.new(
+      data_type:  :ec2_abandoned_volumes,
+      account_id: account.id,
+      aws_region: janitor.region,
+      data:       janitor.abandoned_volumes
+    )
+    r.save
   end
 
-  task :ec2_daily_spending_rate do
-    process_accounts { |region, account|
-      log_action(account, region, "Getting ec2 daily spending rate")
-      acc = AwsAccountJanitor::Account.new(region: region)
-      r = AwsRecord.new()
-      r.account_id = account.id
-      r.data_type = :ec2_daily_rate
-      r.aws_region = region
-      r.data = acc.daily_spending_rate
-      r.save
-    }
+  def orphaned_ddb_tables(account, janitor)
+    r = AwsRecord.new(
+      data_type:  :ddb_abandoned_tables,
+      account_id: account.id,
+      aws_region: janitor.region,
+      data:       janitor.ddb_abandoned_tables
+    )
+    r.save
   end
 
-  task :ec2_abandoned_asgs do
-    process_accounts { |region, account|
-      log_action(account, region, "Getting ec2 abandoned ASGs")
-      acc = AwsAccountJanitor::Account.new(region: region)
-      r = AwsRecord.new()
-      r.account_id = account.id
-      r.data_type = :ec2_abandoned_asgs
-      r.aws_region = region
-      r.data = acc.abandoned_asgs
-      r.save
-    }
-  end
-
-  task :ec2_abandoned_volumes do
-    process_accounts { |region, account|
-      log_action(account, region, "Getting ec2 abandoned volumes")
-      acc = AwsAccountJanitor::Account.new(region: region)
-      r = AwsRecord.new()
-      r.account_id = account.id
-      r.data_type = :ec2_abandoned_volumes
-      r.aws_region = region
-      r.data = acc.abandoned_volumes
-      r.save
-    }
-  end
-
-  task :ddb_abandoned_tables do
-    process_accounts { |region, account|
-      log_action(account, region, "Getting ddb tables")
-      acc = AwsAccountJanitor::Account.new(region: region)
-
-      r = AwsRecord.new()
-      r.account_id = account.id
-      r.data_type = :ddb_abandoned_tables
-      r.aws_region = region
-      r.data = acc.ddb_abandoned_tables
-      r.save
-    }
-  end
-
-  task :rds_orphaned_dbs do
-    process_accounts { |region, account|
-      log_action(account, region, "Getting orphaned rds DBs")
-      acc = AwsAccountJanitor::Account.new(region: region)
-
-      r = AwsRecord.new()
-      r.account_id = account.id
-      r.data_type = :rds_orphaned_tables
-      r.aws_region = region
-      r.data = acc.rds_orphaned_dbs
-      r.save
-    }
+  def orphaned_rds(account, janitor)
+    r = AwsRecord.new(
+      data_type:  :rds_orphaned_tables,
+      account_id: account.id,
+      aws_region: janitor.region,
+      data:       janitor.rds_orphaned_dbs
+    )
+    r.save
   end
 end

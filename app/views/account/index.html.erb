@@ -11,6 +11,8 @@
         <tr>
           <th>Account Name</th>
           <th>Access Key</th>
+          <th>Account Number</th>
+          <th>Notification Emails</th>
         </tr>
       </thead>
       <body>
@@ -18,6 +20,8 @@
           <tr>
             <td> <%= link_to a.alias, "account/#{a.id}" %> </td>
             <td> <%= a.access_key %> </td>
+            <td> <%= a.identifier %> </td>
+            <td> <%= a.email %> </td>
           </tr>
         <% end %>
       </body>
