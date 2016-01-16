@@ -3,6 +3,12 @@ module AwsAccountJanitor
     class DDBTables < Abstract
       OBJECT_LABEL = "ddb_abandoned_tables"
 
+      def orphaned
+        { OBJECT_LABEL => all { |i| is_orphaned?(i) } }
+      end
+
+      private
+
       def ec2
         @ec2 ||= Aws::EC2::Client.new
       end
@@ -31,10 +37,6 @@ module AwsAccountJanitor
       def is_orphaned?(i)
         @threshold ||= Time.new.ago(7)
         i[:creation_date_time] < @threshold
-      end
-
-      def orphaned
-        { OBJECT_LABEL => all { |i| is_orphaned?(i) } }
       end
 
       def standardize(t)

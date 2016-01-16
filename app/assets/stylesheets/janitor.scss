@@ -17,5 +17,35 @@
 @import "bootstrap-sprockets";
 @import "bootstrap";
 
-.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
-.item-menu  { font-size: small; }
+.aws-icon {
+    background-image: image-url("aws.png");
+    height: 16px;
+    width: 16px;
+    font-size: 0;
+}
+
+body.nav-sm .nav.side-menu li a i.aws-icon {
+    background-image: image-url("aws.png");
+    height: 23px;
+    width: 23px;
+    font-size: 0;
+}
+
+.aws-icon-ec2 {
+    background-position: 0 -44px;
+}
+
+.aws-icon-rds {
+    background-position: -192px -44px;
+}
+
+.nav-sm .aws-icon-ec2 {
+    background-position: 0 0px;
+}
+
+.nav-sm .aws-icon-rds {
+    background-position: -192px 0px;
+}
+
+/*.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+.item-menu  { font-size: small; }*/

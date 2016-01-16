@@ -1,33 +1,54 @@
-<ol class="breadcrumb">
-  <li><a href="#">Dashboard</a></li>
-</ol>
+<div class="page-title">
+  <div class="title_left">
+    <h3> Orphaned Resources </h3>
+  </div>
+</div>
+<div class="clearfix"></div>
 
 <% column = 0 %>
 <% @review_required.each do |account_id, data| %>
-  <% if column == 0 %>
-  <div style='padding: 5px' class="row">
-  <% end %>
-    <div class="list-group col-md-2" style='padding-left: 15px'>
-      <a href="#" class="list-group-item disabled">
-        <%= AwsAccount.find(account_id).alias %>
-      </a>
+<% if column == 0 %>
+<div class="row">
+<% end %>
+  <div class="col-md-4 col-sm-4 col-xs-12">
+    <div class="x_panel tile">
+      <div class="x_title">
+        <h2><%= AwsAccount.find(account_id).alias %></h2>
+        <div class="clearfix"></div>
+      </div>
+      <div class="x_content">
         <% data.sort_by { |_, counter| counter }.reverse.to_h.each do |item, counter| %>
-          <% next unless counter > 0 %>
-          <%=
-            route_info = @data_type_controller_map[item.to_s]
-            link_to(
-              { controller: route_info[:controller], action: route_info[:action], account_id: account_id },
-              :class => "list-group-item"
-            ) do
-                raw("<span class='badge'>#{counter}</span>")  +
-                route_info[:action].humanize.titleize
-            end
-          %>
+        <% next unless counter > 0 %>
+        <div class="widget_summary">
+          <% route_info = @data_type_controller_map[item.to_s] %>
+          <div class="w_left"  style='width: 75%'>
+            <span>
+              <%=
+                link_to(
+                  route_info[:action].humanize.titleize,
+                  { controller: route_info[:controller], action: route_info[:action], account_id: account_id }
+                )
+              %>
+            </span>
+          </div>
+          <div class="w_right w_25">
+              <span>
+                <%=
+                  link_to(
+                    counter,
+                    { controller: route_info[:controller], action: route_info[:action], account_id: account_id }
+                  )
+                %>
+              </span>
+          </div>
+          <div class="clearfix"></div>
+        </div>
         <% end %>
+      </div>
     </div>
-
-  <% column = (column + 1) % 6 %>
-  <% if column == 0 %>
   </div>
-  <% end %>
+<% column = (column + 1) % 6 %>
+<% if column == 0 %>
+</div>
+<% end %>
 <% end %>

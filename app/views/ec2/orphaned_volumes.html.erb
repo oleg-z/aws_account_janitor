@@ -1,10 +1,31 @@
-<ol class="breadcrumb">
-  <li><a href="#">EC2</a></li>
-  <li><a href="#">Abandoned Volumes</a></li>
-</ol>
+<!-- top tiles -->
+<div class="row tile_count">
+    <div class="col-md-8 col-sm-4 col-xs-4">
+      <h3> Orhpaned Volumes </h3>
+    </div>
+    <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+        <div class="left"></div>
+        <div class="right">
+            <span class="count_top">
+              <i class="fa fa-cloud"></i> Volumes
+            </span>
+            <div class="count"><%= @data_by_region.values.collect(&:size).sum %> </div>
+        </div>
+    </div>
+    <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+        <div class="left"></div>
+        <div class="right">
+            <span class="count_top">
+              <i class="fa fa-usd"></i> Cost per day
+            </span>
+            <div class="count"><%= @data_by_region.keys.collect{ |r| @cost_by_region[r] }.sum.round(2) %> </div>
+        </div>
+    </div>
+</div>
 
-<div style='padding: 5px'>
-  <div>
+<div class='row'>
+  <div class='col-md-12'>
+    <div class='x_panel'>
     <% if @data_by_region.keys.empty? %>
       <div class="alert alert-info" role="alert">Congratulations! You have no orhaned volumes.</div>
     <% end %>

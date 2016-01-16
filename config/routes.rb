@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   root to: 'janitor#dashboard'
 
+  get '/example' => 'janitor#example'
   get '/dashboard' => 'janitor#dashboard'
 
   get 'ec2/orphaned_instances'

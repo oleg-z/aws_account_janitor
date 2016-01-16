@@ -3,6 +3,14 @@ module AwsAccountJanitor
     class EC2Instances < Abstract
       REQUIRED_TAGS = ["Owner", "Project"]
 
+      def orphaned
+        {
+          ec2_abandoned_instances: all { |i| is_orphaned?(i) }
+        }
+      end
+
+      private
+
       def ec2
         @ec2 ||= Aws::EC2::Client.new
       end
@@ -38,18 +46,10 @@ module AwsAccountJanitor
         ( !tag_exists?(i, 'Owner') || !tag_exists?(i, 'Project') )
       end
 
-      def orphaned
-        {
-          ec2_abandoned_instances: all { |i| is_orphaned?(i) }
-        }
-      end
-
       def standardize(i)
         i["daily_cost"] = instance_price(i[:instance_type]) * 24
         i["create_time"] = i["launch_time"]
       end
-
-      private
 
       def linux_prices(region)
         return @linux_prices if @linux_prices

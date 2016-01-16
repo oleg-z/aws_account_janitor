@@ -9,6 +9,11 @@ module AwsAccountJanitor
       def tag_exists?(i, tag)
         !(i.tags.detect { |t| t.key == tag }.nil?)
       end
+
+      # returns list of orphaned objects
+      def orphaned
+        fail "Method 'orhpaned' not implemented"
+      end
     end
   end
 end

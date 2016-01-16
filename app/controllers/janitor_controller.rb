@@ -1,6 +1,6 @@
 class JanitorController < ActionController::Base
   before_action :current_account, :account_list
-  layout "ec2"
+  layout "admin"
 
   AWS_REGIONS = %w(us-east-1 us-west-1 us-west-2 eu-west-1 eu-central-1 sa-east-1 ap-southeast-2 ap-southeast-1 ap-northeast-1)
 
@@ -89,6 +89,10 @@ class JanitorController < ActionController::Base
   rescue => e
     Rails.logger.error(e)
     render json: { error: "Failed to tag an object" }
+  end
+
+  def example
+    render layout: false
   end
 
   protected

@@ -19,12 +19,12 @@ class Ec2Controller < JanitorController
   end
 
   def orphaned_asgs
-    @abandoned_asgs = {}
+    @data_by_region = {}
     @object_type = Aws::AutoScaling::Types::AutoScalingGroup
     AWS_REGIONS.each do |region|
       data = region_abandoned_asgs(region)
       next if data.empty?
-      @abandoned_asgs[region] = data
+      @data_by_region[region] = data
     end
   end
 

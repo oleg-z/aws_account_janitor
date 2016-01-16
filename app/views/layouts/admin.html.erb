@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Account Janitor</title>
+
+    <!-- Bootstrap core CSS -->
+    <%= stylesheet_link_tag "gentelella/bootstrap.min.css", rel: "stylesheet" %>
+
+    <%= stylesheet_link_tag "/fonts/css/font-awesome.min.css", rel: "stylesheet" %>
+    <%= stylesheet_link_tag "gentelella/animate.min.css", rel: "stylesheet" %>
+
+    <!-- Custom styling plus plugins -->
+    <%= stylesheet_link_tag "janitor", rel: "stylesheet" %>
+    <%= stylesheet_link_tag "gentelella/custom.css", rel: "stylesheet" %>
+    <%= stylesheet_link_tag "gentelella/maps/jquery-jvectormap-2.0.1.css", rel: "stylesheet" %>
+    <%= stylesheet_link_tag "gentelella/icheck/flat/green.css", rel: "stylesheet" %>
+    <%= stylesheet_link_tag "gentelella/floatexamples.css", rel: "stylesheet" %>
+
+    <%= javascript_include_tag 'janitor' %>
+    <%= javascript_include_tag "gentelella/nprogress.js" %>
+    <script>
+        NProgress.start();
+    </script>
+</head>
+
+
+<body class="nav-md">
+    <div class="container body">
+         <div class="main_container">
+            <div class="col-md-3 left_col">
+                <div class="left_col scroll-view">
+
+                    <div class="navbar nav_title" style="border: 0;">
+                        <a href="#" class="site_title"></i> <span>Account Janitor</span></a>
+                    </div>
+                    <div class="clearfix"></div>
+
+                    <br />
+
+                    <!-- sidebar menu -->
+                    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+
+                        <div class="menu_section">
+                            <h3>General</h3>
+                            <ul class="nav side-menu">
+                                <li>
+                                  <a>
+                                    <i class="fa fa-bar-chart-o"> </i>
+                                    Dashboard
+                                    <span class="fa fa-chevron-down"></span>
+                                  </a>
+                                  <ul class="nav child_menu" style="display: none">
+                                    <li>
+                                      <%= link_to "Orphaned Resources", { controller: "janitor", action: "dashboard", account_id: params[:account_id] } %>
+                                    </li>
+                                  </ul>
+                                </li>
+                                <li>
+                                  <a>
+                                    <i class="fa aws-icon aws-icon-ec2"> </i>
+                                    EC2
+                                    <span class="fa fa-chevron-down"></span>
+                                  </a>
+                                  <ul class="nav child_menu" style="display: none">
+                                      <li>
+                                        <%= link_to "Orphaned Instances", { controller: "ec2", action: "orphaned_instances", account_id: params[:account_id] } %>
+                                      </li>
+                                      <li>
+                                        <%= link_to "Orphaned ASGs", { controller: "ec2", action: "orphaned_asgs", account_id: params[:account_id] } %>
+                                      </li>
+                                      <li>
+                                        <%= link_to "Orphaned Volumes", { controller: "ec2", action: "orphaned_volumes", account_id: params[:account_id] } %>
+                                      </li>
+                                  </ul>
+                                </li>
+                                <li><a><i class="fa aws-icon aws-icon-rds"></i> RDS <span class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu" style="display: none">
+                                        <li>
+                                          <%= link_to "Dynamo DB", { controller: "database", action: "orphaned_ddb", account_id: params[:account_id] } %>
+                                        </li>
+                                        <li>
+                                          <%= link_to "RDS", { controller: "database", action: "orphaned_rds", account_id: params[:account_id] } %>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a>
+                                      <i class="fa fa-laptop"></i>
+                                      Settings
+                                      <span class="fa fa-chevron-down"></span>
+                                    </a>
+                                    <ul class="nav child_menu" style="display: none">
+                                        <li>
+                                          <%= link_to "Accounts", { controller: "account", action: "index" } %>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- /sidebar menu -->
+
+                    <!-- /menu footer buttons -->
+                    <div class="sidebar-footer hidden-small">
+                        <a data-toggle="tooltip" data-placement="top" title="Settings">
+                            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                        </a>
+                        <a data-toggle="tooltip" data-placement="top" title="FullScreen">
+                            <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+                        </a>
+                        <a data-toggle="tooltip" data-placement="top" title="Lock">
+                            <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
+                        </a>
+                        <a data-toggle="tooltip" data-placement="top" title="Logout">
+                            <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+                        </a>
+                    </div>
+                    <!-- /menu footer buttons -->
+                </div>
+            </div>
+
+            <!-- top navigation -->
+            <div class="top_nav">
+                <div class="nav_menu">
+                    <nav class="" role="navigation">
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li role="presentation" class="dropdown">
+                                <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
+                                    <b>Account:</b> <%= @current_account.alias %><span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                  <% @account_list.each do |account| %>
+                                    <% next if account.id == @current_account.id %>
+                                    <li><a href="?account_id=<%= account.id %>"><%= account.alias %></a></li>
+                                  <% end %>
+                                </ul>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- /top navigation -->
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class='row'>
+                  <%= yield %>
+                </div>
+            </div>
+            <!-- /page content -->
+
+        </div>
+
+    </div
+    <div id="custom_notifications" class="custom-notifications dsp_none">
+        <ul class="list-unstyled notifications clearfix" data-tabbed_notifications="notif-group">
+        </ul>
+        <div class="clearfix"></div>
+        <div id="notif-group" class="tabbed_notifications"></div>
+    </div>
+
+    <%= javascript_include_tag "gentelella/custom" %>
+</body>
+
+</html>

@@ -1,8 +1,3 @@
-<ol class="breadcrumb">
-  <li><a href="#">EC2</a></li>
-  <li><a href="#">Orphaned ASGs</a></li>
-</ol>
-
 <div style='padding: 5px'>
   <div>
     <% if @data_by_region.keys.empty? %>
@@ -10,9 +5,9 @@
     <% end %>
 
     <ul id='regions' class="nav nav-tabs" role="tablist">
-      <% @abandoned_asgs.keys.each_with_index do |region, i| %>
+      <% @data_by_region.keys.each_with_index do |region, i| %>
         <li region='<%= region %>' role="presentation" class="<%= i == 0 ? "active": "" %>">
-          <a href="#<%= region %>" aria-controls="<%= region %>" role="tab" data-toggle="tab"><%= region %> <span class="label label-default"> <%= @abandoned_asgs[region].size %></span> </a>
+          <a href="#<%= region %>" aria-controls="<%= region %>" role="tab" data-toggle="tab"><%= region %> <span class="label label-default"> <%= @data_by_region[region].size %></span> </a>
         </li>
       <% end %>
     </ul>
@@ -20,7 +15,7 @@
     <%= render "shared/item_tag_dialog" %>
 
     <div class="tab-content">
-      <% @abandoned_asgs.keys.each_with_index do |region, i| %>
+      <% @data_by_region.keys.each_with_index do |region, i| %>
         <div role="tabpanel" class="tab-pane <%= i == 0 ? "active": "" %>" id="<%= region %>">
           <table class="table table-striped">
             <thead>
@@ -32,7 +27,7 @@
                 <th>Tags</th>
               </tr>
             </thead>
-            <% @abandoned_asgs[region].each do |asg| %>
+            <% @data_by_region[region].each do |asg| %>
               <tr>
                 <td><%= render partial: "shared/item_menu" %></td>
                 <td>

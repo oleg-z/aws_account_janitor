@@ -1,29 +1,39 @@
-<ol class="breadcrumb">
-  <li><a href="#">Settings</a></li>
-  <li><a href="#">Accounts</a></li>
-</ol>
+<div class="page-title">
+  <div class="title_left">
+    <h3> Accounts </h3>
+  </div>
+</div>
+<div class='row'>
+  <div class='col-md-12'>
+    <div class='x_panel'>
+      <ul class="nav nav-pills" role="tablist">
+        <li role="presentation" class="pull-right">
+          <%= link_to url_for(action: :new) do %>
+            <i class="fa fa-plus-square"></i> Add Account
+          <% end %>
+        </li>
+      </ul>
 
-<div style='padding: 5px'>
-  <div>
-    <%= link_to "Add Account", { action: :new }, {type:"button", class: "btn btn-default"} %>
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Account Name</th>
-          <th>Access Key</th>
-          <th>Account Number</th>
-          <th>Notification Emails</th>
-        </tr>
-      </thead>
-      <body>
-        <% @accounts.each do |a| %>
+      <table class="table table-striped">
+        <thead>
           <tr>
-            <td> <%= link_to a.alias, "account/#{a.id}" %> </td>
-            <td> <%= a.access_key %> </td>
-            <td> <%= a.identifier %> </td>
-            <td> <%= a.email %> </td>
+            <th>Account Name</th>
+            <th>Access Key</th>
+            <th>Account Number</th>
+            <th>Notification Emails</th>
           </tr>
-        <% end %>
-      </body>
+        </thead>
+        <tbody>
+          <% @accounts.each do |a| %>
+            <tr>
+              <td> <%= link_to a.alias, "account/#{a.id}" %> </td>
+              <td> <%= a.access_key %> </td>
+              <td> <%= a.identifier %> </td>
+              <td> <%= a.email %> </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

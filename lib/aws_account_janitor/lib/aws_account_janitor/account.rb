@@ -76,8 +76,6 @@ module AwsAccountJanitor
 
     private
 
-
-
     def volume_cost(volume)
       prices = Global.ebs_prices(@region)
       iops_cost = prices[volume[:volume_type]]["per_iops"]*volume[:iops].to_i
