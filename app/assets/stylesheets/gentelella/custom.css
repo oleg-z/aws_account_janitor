@@ -189,7 +189,7 @@ body.nav-sm .menu_section h3 {
     float: left;
     /*background: #F4F6F9;
     border-bottom: 1px solid #E6E9ED;*/
-    
+
     background: #EDEDED;
     border-bottom: 1px solid #D9DEE4;
     margin-bottom: 10px;
@@ -372,7 +372,7 @@ body {
     color: #73879C;
     background: #2A3F54;
     /*#ECF0F1; #FCFCFC*/
-    
+
     font-family: "Helvetica Neue", Roboto, Arial, "Droid Sans", sans-serif;
     font-size: 13px;
     font-weight: 400;
@@ -2434,7 +2434,7 @@ span.section {
   color: #333;
   border: 0;
   border-bottom: 1px solid #e5e5e5;
-} 
+}
 
 .form-control {
     border-radius: 0;
@@ -2898,7 +2898,7 @@ select.parsley-error {
 }
 
 .well .markup-heading{
-    
+
 }
 .well .markup{
     background: #fff;
@@ -3353,10 +3353,10 @@ textarea:focus {
     background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);
     background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
     background-repeat: repeat-x;
-    filter: progid: DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe6e6e6', GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe6e6e6', GradientType=0);
     border-color: #e6e6e6 #e6e6e6 #bfbfbf;
     border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-    filter: progid: DXImageTransform.Microsoft.gradient(enabled false);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled false);
     border: 1px solid #cccccc;
     border-bottom-color: #b3b3b3;
     -webkit-border-radius: 4px;
@@ -3487,7 +3487,7 @@ span.tag a {
 
 ul.bar_tabs {
     /* border: 1px solid #ff0000; */
-    
+
     overflow: visible;
     background: #F5F7FA;
     height: 25px;
@@ -3673,7 +3673,7 @@ ul.social li {
     display: block;
     position: relative;
     -moz-opacity: 1;
-    filter: alpha(opacity: 100);
+    filter: alpha(opacity=100);
     opacity: 1;
     color: #666;
 }
@@ -3807,7 +3807,7 @@ ul.social li {
     display: block;
     position: relative;
     -moz-opacity: 1;
-    filter: alpha(opacity: 100);
+    filter: alpha(opacity=100);
     opacity: 1;
     color: #666;
 }
@@ -3872,7 +3872,7 @@ ul.social li {
     position: absolute;
     height: auto;
     /* Ensures notices are above everything */
-    
+
     z-index: 9999;
 }
 /* Hides position: fixed from IE6 */
@@ -4258,8 +4258,8 @@ ul.widget_tally .count {
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
-    filter: progid: DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe6e6e6', GradientType=0);
-    filter: progid: DXImageTransform.Microsoft.gradient(enabled=false);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe6e6e6', GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
     padding-bottom: 10px;
     -webkit-box-shadow: 0 4px 6px -6px #222;
     -moz-box-shadow: 0 4px 6px -6px #222;
@@ -5671,12 +5671,12 @@ a.hiddenanchor{
     position: relative;
 }
 
-#register, 
+#register,
 #login{
     position: absolute;
     top: 0px; width:100%;
 }
-#register{	
+#register{
     z-index: 21;
     opacity: 0; width:100%;
 }
@@ -5848,7 +5848,7 @@ form:after {
     border: 1px solid #A878AF;
     outline: none;
 }
-}
+
 #username { background-position: 10px 10px !important }
 #password { background-position: 10px -53px !important }
 .login_content form div a {
