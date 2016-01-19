@@ -22,13 +22,8 @@ namespace :aws_data do
     end
 
     task_frequency = {
-      fetch_internal: 1800,
-      billing: 3600 * 3
-    }
-
-    task_frequency = {
-      fetch_internal: 5,
-      billing: 10
+      billing: 3600 * 3,
+      fetch_internal: 1800
     }
 
     last_execution = {}

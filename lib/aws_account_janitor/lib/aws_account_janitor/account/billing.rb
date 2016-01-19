@@ -57,7 +57,7 @@ module AwsAccountJanitor
         key: remote_zip
       ).body
 
-      puts "Unpacking billing zip file"
+      puts "Unpacking billing zip file to #{local_zip}.unzipped"
       `unzip -p #{local_zip} > #{local_zip}.unzipped`
       File.unlink(local_zip)
       "#{local_zip}.unzipped"
