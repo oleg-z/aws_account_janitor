@@ -42,9 +42,17 @@ class JanitorController < ActionController::Base
 
   def usage_dashboard
     @daily_usage = {}
+    @timeframes = {
+      "2 weeks"  => 86400 * 14,
+      "1 month"  => 86400 * 30,
+      "2 months" => 86400 * 60,
+      "3 months" => 86400 * 90
+    }
+
+    @selected_timeframe = @timeframes[params["timeframe"]] ? params["timeframe"] : "2 weeks"
 
     @daily_usage_sorted = {}
-    AwsUsageRecord.where("data_type = ? AND ? < date AND date < ?", 'daily_cost', (Time.now - 86400*14), Time.now).each do |r|
+    AwsUsageRecord.where("data_type = ? AND ? < date AND date < ?", 'daily_cost', (Time.now - @timeframes[@selected_timeframe]), Time.now).each do |r|
       @daily_usage[r.account_id] ||= {}
       @daily_usage[r.account_id][r.date] = r.data
     end

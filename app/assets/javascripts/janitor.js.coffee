@@ -17,6 +17,5 @@ class App.Janitor extends App.Base
             d = new Date(date)
             points.push(["#{d.getMonth()+1}/#{d.getUTCDate()}", parseInt(cost), "color: #{color}"])
 
-
-        new Element.GoogleChart(k).draw(points: points, legend_position: 'none')
+        new Element.GoogleChart(k).draw(points: points, legend_position: 'none', haxis_ticks: Math.ceil(points.length/8))
     return

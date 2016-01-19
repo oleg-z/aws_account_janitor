@@ -19,9 +19,12 @@ class Element.GoogleChart
       animation:
         duration: 500,
         easing: 'out',
+
       hAxis:
-        slantedTextAngle: 45
-        showTextEvery: 2
+        slantedText: false
+        title: options.title
+        showTextEvery: options.haxis_ticks
+        textPosition: 'out'
         textStyle:
             bold: true
             color: 'black'

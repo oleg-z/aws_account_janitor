@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  root to: 'janitor#dashboard'
+  root to: 'janitor#usage_dashboard'
 
   get '/example' => 'janitor#example'
   get '/dashboard' => 'janitor#dashboard'

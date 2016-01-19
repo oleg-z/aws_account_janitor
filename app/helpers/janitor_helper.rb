@@ -11,5 +11,10 @@ module JanitorHelper
     Time.parse(string).strftime("%m/%d/%Y")
   end
 
-
+  def update_url(new_params)
+    merged_params = params
+    merged_params.merge!(new_params)
+    merged_params[:action] = action_name
+    url_for(merged_params)
+  end
 end
