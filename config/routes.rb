@@ -3,6 +3,7 @@ Rails.application.routes.draw do
 
   get '/example' => 'janitor#example'
   get '/dashboard' => 'janitor#dashboard'
+  get '/usage_dashboard' => 'janitor#usage_dashboard'
 
   get 'ec2/orphaned_instances'
   get 'ec2/orphaned_asgs'

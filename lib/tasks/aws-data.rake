@@ -81,6 +81,36 @@ namespace :aws_data do
     end
   end
 
+  task :billing => [:environment] do
+    AwsAccount.all.each do |account|
+      next if account.billing_bucket.to_s.strip == ""
+      @credentials = {}
+      begin
+        switch_account(account, "us-east-1")
+        janitor = AwsAccountJanitor::Account.new(
+          region: "us-east-1",
+          account_number: account.identifier,
+          billing_bucket: account.billing_bucket
+        )
+        binding.pry
+        janitor.billing[:usage_by_account].each do |account_id, daily_data|
+          daily_data.each do |date, value|
+            r = AwsUsageRecord.find_by(data_type: 'daily_cost', account_id: account_id, date: date)
+            unless r
+              r = AwsUsageRecord.new(
+                data_type:  'daily_cost',
+                account_id: account_id,
+                date:       date,
+                data:       value
+              )
+            end
+            r.save
+          end
+        end
+      end
+    end
+  end
+
   def log_action(account, region, message)
     Rails.logger.info("#{account.alias}@#{region}: #{message}")
   end

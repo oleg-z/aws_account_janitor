@@ -11,18 +11,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151023225249) do
+ActiveRecord::Schema.define(version: 20160119165241) do
 
   create_table "aws_accounts", force: :cascade do |t|
     t.string   "alias"
     t.string   "access_key"
     t.string   "secret_key"
     t.string   "role"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
     t.integer  "account_id"
     t.string   "email"
     t.string   "identifier"
+    t.text     "billing_bucket"
   end
 
   create_table "aws_data", force: :cascade do |t|
@@ -37,9 +38,19 @@ ActiveRecord::Schema.define(version: 20151023225249) do
     t.string   "data_type"
     t.string   "aws_region"
     t.text     "data"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+    t.integer  "account_id"
+    t.text     "billing_bucket"
+  end
+
+  create_table "aws_usage_records", force: :cascade do |t|
+    t.string   "data_type"
+    t.string   "account_id"
+    t.date     "date"
+    t.text     "data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer  "account_id"
   end
 
 end

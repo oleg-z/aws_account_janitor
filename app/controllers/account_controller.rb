@@ -21,6 +21,7 @@ class AccountController < JanitorController
     a.secret_key = params[:secret_key]
     a.role = params[:role]
     a.identifier = params[:identifier]
+    a.billing_bucket = params[:billing_bucket]
     a.email = params[:email]
     a.save
     redirect_to action: :index
@@ -35,6 +36,7 @@ class AccountController < JanitorController
     a.role       = params[:role].to_s.strip
     a.email      = params[:email]
     a.identifier = params[:identifier]
+    a.billing_bucket = params[:billing_bucket]
     a.save
     redirect_to action: :index
   end

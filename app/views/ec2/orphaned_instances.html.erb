@@ -18,7 +18,7 @@
             <span class="count_top">
               <i class="fa fa-usd"></i> Cost per day
             </span>
-            <div class="count"><%= @abandoned_instances.keys.collect{ |r| @spending_rate_by_region[r] }.sum %> </div>
+            <div class="count"><%= @abandoned_instances.keys.collect{ |r| @spending_rate_by_region[r] }.sum.round(2) %> </div>
         </div>
     </div>
 </div>

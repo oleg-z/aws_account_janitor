@@ -58,6 +58,9 @@
                                   </a>
                                   <ul class="nav child_menu" style="display: none">
                                     <li>
+                                      <%= link_to "Daily Usage", { controller: "janitor", action: "usage_dashboard", account_id: params[:account_id] } %>
+                                    </li>
+                                    <li>
                                       <%= link_to "Orphaned Resources", { controller: "janitor", action: "dashboard", account_id: params[:account_id] } %>
                                     </li>
                                   </ul>

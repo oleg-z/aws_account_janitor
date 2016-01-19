@@ -2,6 +2,7 @@ require 'aws-sdk'
 require 'open-uri'
 require 'pry'
 require 'json'
+require 'date'
 
 require_relative 'managed_objects/abstract'
 require_relative 'managed_objects/ec2_instances'
@@ -10,6 +11,8 @@ require_relative 'managed_objects/ddb_tables'
 
 module AwsAccountJanitor
   class Account
+    require_relative 'account/billing'
+
     attr_reader :instance_age
     attr_reader :ddb_table_age
     attr_reader :region
@@ -20,6 +23,14 @@ module AwsAccountJanitor
       Aws.config.update(region: @region)
 
       @account_number = args[:account_number]
+      if args[:billing_bucket]
+        @billing = Billing.new(account_id: account_number, billing_bucket: args[:billing_bucket])
+      end
+    end
+
+    def billing
+      return {} if @billing.nil?
+      return @billing.report
     end
 
     def ec2

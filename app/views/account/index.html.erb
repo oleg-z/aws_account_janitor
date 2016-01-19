@@ -24,7 +24,7 @@
           </tr>
         </thead>
         <tbody>
-          <% @accounts.each do |a| %>
+          <% @accounts.sort_by(&:alias).each do |a| %>
             <tr>
               <td> <%= link_to a.alias, "account/#{a.id}" %> </td>
               <td> <%= a.access_key %> </td>

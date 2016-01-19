@@ -40,6 +40,15 @@ class JanitorController < ActionController::Base
     @data_type_controller_map = DATA_TYPE_CONTROLLER_MAP
   end
 
+  def usage_dashboard
+    @daily_usage = {}
+
+    AwsUsageRecord.where("data_type = ? AND date < ?", 'daily_cost', (Time.now - 86400*14)).each do |r|
+      @daily_usage[r.account_id] ||= {}
+      @daily_usage[r.account_id][r.date] = r.data
+    end
+  end
+
   def update_tags
     object_type = params[:object_type]
     region = params[:region]
