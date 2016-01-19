@@ -1,5 +1,7 @@
 //= require jquery
 //= require bootstrap
+//= require base
+//= require elements/google_chart
 
 jQuery(function($) {
     $('form[data-async]').on('submit', function(event) {

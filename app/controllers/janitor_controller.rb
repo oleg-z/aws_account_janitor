@@ -43,10 +43,24 @@ class JanitorController < ActionController::Base
   def usage_dashboard
     @daily_usage = {}
 
-    AwsUsageRecord.where("data_type = ? AND date < ?", 'daily_cost', (Time.now - 86400*14)).each do |r|
+    @daily_usage_sorted = {}
+    AwsUsageRecord.where("data_type = ? AND ? < date AND date < ?", 'daily_cost', (Time.now - 86400*14), Time.now).each do |r|
       @daily_usage[r.account_id] ||= {}
       @daily_usage[r.account_id][r.date] = r.data
     end
+
+    @daily_usage_sorted = {}
+
+    # sort by average spending
+    @daily_usage
+      .sort_by { |k, v| p (v.values.collect(&:to_i).sum)/v.values.size }
+      .reverse
+      .each { |i| @daily_usage_sorted[i[0]] = i[1] }
+
+
+    @daily_usage = @daily_usage_sorted
+
+    to_javascript usage_data: @daily_usage
   end
 
   def update_tags

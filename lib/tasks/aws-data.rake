@@ -7,9 +7,8 @@ namespace :aws_data do
     if Rails.env.development?
       Rails.logger = Logger.new(STDOUT)
     else
-      Rails.logger       = Logger.new(Rails.root.join('log', 'daemon.log'))
+      Rails.logger = Logger.new(Rails.root.join('log', 'daemon.log'))
     end
-
     Rails.logger.level = Logger.const_get((ENV['LOG_LEVEL'] || 'info').upcase)
 
     if Rails.env.production?
@@ -19,15 +18,27 @@ namespace :aws_data do
       #end
 
       Signal.trap('TERM') { abort }
-
       Rails.logger.info "Start daemon..."
+    end
 
-      loop do
-        Rake::Task['aws_data:fetch_internal'].invoke
-        sleep 900
+    task_frequency = {
+      fetch_internal: 1800,
+      billing: 3600 * 3
+    }
+
+    task_frequency = {
+      fetch_internal: 5,
+      billing: 10
+    }
+
+    last_execution = {}
+    loop do
+      task_frequency.each do |task, frequency|
+        next unless Time.now.to_i - last_execution[task].to_i >= frequency
+        Rake::Task["aws_data:#{task}"].invoke
+        last_execution[task] = Time.now
       end
-    else
-      Rake::Task['aws_data:fetch_internal'].invoke
+      sleep 1
     end
   end
 
@@ -92,7 +103,6 @@ namespace :aws_data do
           account_number: account.identifier,
           billing_bucket: account.billing_bucket
         )
-        binding.pry
         janitor.billing[:usage_by_account].each do |account_id, daily_data|
           daily_data.each do |date, value|
             r = AwsUsageRecord.find_by(data_type: 'daily_cost', account_id: account_id, date: date)

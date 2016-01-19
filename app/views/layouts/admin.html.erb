@@ -22,9 +22,12 @@
     <%= stylesheet_link_tag "gentelella/maps/jquery-jvectormap-2.0.1.css", rel: "stylesheet" %>
     <%= stylesheet_link_tag "gentelella/icheck/flat/green.css", rel: "stylesheet" %>
     <%= stylesheet_link_tag "gentelella/floatexamples.css", rel: "stylesheet" %>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
-    <%= javascript_include_tag 'janitor' %>
+    <%= javascript_include_tag 'application' %>
+    <%= javascript_include_tag "#{controller_name}" %>
     <%= javascript_include_tag "gentelella/nprogress.js" %>
+
     <script>
         NProgress.start();
     </script>
@@ -174,6 +177,7 @@
     </div>
 
     <%= javascript_include_tag "gentelella/custom" %>
+    <%= include_rails_script %>
 </body>
 
 </html>
