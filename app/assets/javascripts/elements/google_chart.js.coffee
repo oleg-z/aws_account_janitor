@@ -8,8 +8,9 @@ class Element.GoogleChart
     @container = $("#account_#{@container_id}").parent()
     @node = $("#account_#{@container_id}")
 
-    @chart = new google.visualization.ColumnChart(@node[0])
+    @chart = new google.visualization.ComboChart(@node[0])
     @options =
+      chartArea: {width: '80%', height: '70%'},
       width: @container.width()
       height: @container.height()
       backgroundColor:
@@ -33,6 +34,9 @@ class Element.GoogleChart
             bold: true
             fontSize: 12,
             color: 'black'
+
+      seriesType: 'bars',
+      series: {1: {type: 'line'}}
 
     @data = google.visualization.arrayToDataTable options.points
     @chart.draw @data, @options

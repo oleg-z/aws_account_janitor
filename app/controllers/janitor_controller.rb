@@ -60,11 +60,17 @@ class JanitorController < ActionController::Base
     @daily_usage_sorted = {}
 
     # sort by average spending
+    accounts = AwsAccount.all
     @daily_usage
-      .sort_by { |k, v| p (v.values.collect(&:to_i).sum)/v.values.size }
+      .sort_by { |k, v| (v.values.collect(&:to_i).sum)/v.values.size }
       .reverse
-      .each { |i| @daily_usage_sorted[i[0]] = i[1] }
-
+      .each do |i|
+        managed_account = accounts.detect { |a| a.identifier == i[0] }
+        @daily_usage_sorted[i[0]] = {
+          spending: i[1],
+          threshold: managed_account ? managed_account.spending_threshold : 0
+        }
+      end
 
     @daily_usage = @daily_usage_sorted
 

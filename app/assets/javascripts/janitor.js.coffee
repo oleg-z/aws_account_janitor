@@ -10,12 +10,12 @@ class App.Janitor extends App.Base
 
 
   usage_dashboard: =>
-    for k,v of Utility.RailsVars.usage_data
-        points = [["Date", "$/day", { role: "style" } ]]
-        for date, cost of v
+    for account,v of Utility.RailsVars.usage_data
+        points = [["Date", "$/day", "Threshold", { role: "style" } ]]
+        for date, cost of v.spending
             color = true ? '#008000' : '#008000'
             d = new Date(date)
-            points.push(["#{d.getMonth()+1}/#{d.getUTCDate()}", parseInt(cost), "color: #{color}"])
+            points.push(["#{d.getMonth()+1}/#{d.getUTCDate()}", parseInt(cost), parseInt(v.threshold), "color: #{color}"])
 
-        new Element.GoogleChart(k).draw(points: points, legend_position: 'none', haxis_ticks: Math.ceil(points.length/8))
+        new Element.GoogleChart(account).draw(points: points, legend_position: 'none', haxis_ticks: Math.ceil(points.length/8))
     return

@@ -11,19 +11,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160119165241) do
+ActiveRecord::Schema.define(version: 20160120184824) do
 
   create_table "aws_accounts", force: :cascade do |t|
     t.string   "alias"
     t.string   "access_key"
     t.string   "secret_key"
     t.string   "role"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
     t.integer  "account_id"
     t.string   "email"
     t.string   "identifier"
     t.text     "billing_bucket"
+    t.integer  "spending_threshold"
   end
 
   create_table "aws_data", force: :cascade do |t|
