@@ -89,15 +89,19 @@ namespace :aws_data do
         janitor.billing[:usage_by_account].each do |account_id, daily_data|
           daily_data.each do |date, value|
             r = AwsUsageRecord.find_by(data_type: 'daily_cost', account_id: account_id, date: date)
-            unless r
+
+            if r.nil?
               r = AwsUsageRecord.new(
                 data_type:  'daily_cost',
                 account_id: account_id,
                 date:       date,
                 data:       value
               )
+              r.save
+            elsif r.data != value
+              r.data = value
+              r.save
             end
-            r.save
           end
         end
       end
