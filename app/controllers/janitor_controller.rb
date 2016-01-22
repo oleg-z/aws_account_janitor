@@ -5,11 +5,11 @@ class JanitorController < ActionController::Base
   AWS_REGIONS = %w(us-east-1 us-west-1 us-west-2 eu-west-1 eu-central-1 sa-east-1 ap-southeast-2 ap-southeast-1 ap-northeast-1)
 
   DATA_TYPE_CONTROLLER_MAP = {
-    "ec2_abandoned_instances" => { controller: 'ec2', action: 'orphaned_instances' },
-    "ec2_abandoned_volumes"   => { controller: 'ec2', action: 'orphaned_volumes' },
-    "ec2_abandoned_asgs"      => { controller: 'ec2', action: 'orphaned_asgs' },
-    "ddb_abandoned_tables"    => { controller: 'database', action: 'orphaned_ddb' },
-    "rds_orphaned_tables"     => { controller: 'database', action: 'orphaned_rds' }
+    "ec2_abandoned_instances" => { controller: 'ec2', action: 'orphaned_instances', label: 'EC2 Instances' },
+    "tag_violation_volumes"   => { controller: 'ec2', action: 'orphaned_volumes', label: 'EC2 Volumes'},
+    "tag_violation_asgs"      => { controller: 'ec2', action: 'orphaned_asgs', label: 'EC2 ASGs' },
+    "ddb_abandoned_tables"    => { controller: 'database', action: 'orphaned_ddb', label: 'DDB Tables' },
+    "rds_orphaned_tables"     => { controller: 'database', action: 'orphaned_rds', label: 'RDS Instances' }
   }
 
   def dashboard
@@ -18,6 +18,8 @@ class JanitorController < ActionController::Base
       .group("account_id, data_type, aws_region")
 
     @review_required = {}
+
+    types = [:ec2_abandoned_instances, :tag_violation_volumes, :rds_orphaned_tables]
 
     AwsAccount.all.each do |account|
       records = AwsRecord
@@ -30,7 +32,7 @@ class JanitorController < ActionController::Base
         .sort_by { |r| r.data.size }
         .each do |r|
           next unless r.account_id
-          next unless DATA_TYPE_CONTROLLER_MAP[r.data_type]
+          next unless types.include?(r.data_type.to_sym)
 
           @review_required[account.id] ||= {}
           @review_required[account.id][r.data_type] = @review_required[account.id][r.data_type].to_i + r.data.size

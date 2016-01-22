@@ -1,12 +1,8 @@
 module AwsAccountJanitor
   class ManagedObjects
     class EC2Instances < Abstract
-      REQUIRED_TAGS = ["Owner", "Project"]
-
-      def orphaned
-        {
-          ec2_abandoned_instances: all { |i| is_orphaned?(i) }
-        }
+      def improperly_tagged
+        { ec2_abandoned_instances: all.select { |o| violate_tag_rules?(o) } }
       end
 
       private
@@ -27,11 +23,10 @@ module AwsAccountJanitor
           instances = ec2.describe_instances(filters: instance_filter, max_results: 100, next_token: next_token)
           data += instances
             .reservations
-            .collect { |r| r.instances.select { |i| yield i } }
+            .collect { |r| r.instances }
             .compact
             .flatten
-            .collect(&:to_h)
-            .each { |i| standardize(i) }
+            .collect { |i| standardize(i) }
           next_token = instances.next_token
           break unless next_token
         end
@@ -39,16 +34,11 @@ module AwsAccountJanitor
         data
       end
 
-      def is_orphaned?(i)
-        @threshold ||= Time.new.ago(7)
-
-        i.launch_time < @threshold &&
-        ( !tag_exists?(i, 'Owner') || !tag_exists?(i, 'Project') )
-      end
-
       def standardize(i)
-        i["daily_cost"] = instance_price(i[:instance_type]) * 24
-        i["create_time"] = i["launch_time"]
+        i = to_hash(i)
+        i[:daily_cost] = instance_price(i[:instance_type]) * 24
+        i[:create_time] = i[:launch_time]
+        i
       end
 
       def linux_prices(region)

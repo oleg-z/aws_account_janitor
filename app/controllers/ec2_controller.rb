@@ -37,8 +37,8 @@ class Ec2Controller < JanitorController
       data = region_abandoned_volumes(region)
       next if data.empty?
       @data_by_region[region] = data
-      @cost_by_region[region] = 0
-      @data_by_region[region].each { |v| @cost_by_region[region] += v["cost"].to_f }
+      @cost_by_region[region] = @data_by_region[region].inject(0) { |sum, i| sum += i["daily_cost"].to_f }.round(2)
+
     end
   end
 
@@ -66,7 +66,7 @@ class Ec2Controller < JanitorController
 
   def region_abandoned_asgs(region)
     r = AwsRecord
-      .where(account_id: current_account.id, aws_region: region, data_type: :ec2_abandoned_asgs)
+      .where(account_id: current_account.id, aws_region: region, data_type: :tag_violation_asgs)
       .order("created_at DESC")
       .limit(1)
       .last
@@ -76,7 +76,7 @@ class Ec2Controller < JanitorController
 
   def region_abandoned_volumes(region)
     r = AwsRecord
-      .where(account_id: current_account.id, aws_region: region, data_type: :ec2_abandoned_volumes)
+      .where(account_id: current_account.id, aws_region: region, data_type: :tag_violation_volumes)
       .order("created_at DESC")
       .limit(1)
       .last

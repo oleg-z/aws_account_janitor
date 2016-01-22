@@ -50,6 +50,7 @@
                 <th></th>
                 <th></th>
                 <th>Volume Id</th>
+                <th>State</th>
                 <th>Create Time</th>
                 <th>Type</th>
                 <th>Size</th>
@@ -68,11 +69,12 @@
                   <a href='https://console.aws.amazon.com/ec2/v2/home?region=<%= region %>#Volumes:search=<%= volume["volume_id"] %>'>
                     <%= volume["volume_id"] %>
                   </a> </td>
+                <td> <%= volume["state"] %> </td>
                 <td> <%= Time.parse(volume["create_time"]).strftime("%F") %> </td>
                 <td> <%= volume["volume_type"] %> </td>
                 <td> <%= volume["size"] %> </td>
                 <td> <%= volume["iops"] %> </td>
-                <td> <%= volume["cost"] %> </td>
+                <td> <%= volume["daily_cost"] %> </td>
                 <td>
                   <% volume["tags"].to_a.each do |t| %>
                     <% tag_value = t["value"].size < 50 ? t["value"] : "#{t["value"][0...50]}..." %>

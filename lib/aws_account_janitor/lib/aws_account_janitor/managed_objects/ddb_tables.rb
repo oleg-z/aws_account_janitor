@@ -1,12 +1,6 @@
 module AwsAccountJanitor
   class ManagedObjects
     class DDBTables < Abstract
-      OBJECT_LABEL = "ddb_abandoned_tables"
-
-      def orphaned
-        { OBJECT_LABEL => all { |i| is_orphaned?(i) } }
-      end
-
       private
 
       def ec2
@@ -23,8 +17,7 @@ module AwsAccountJanitor
           tables = ddb.list_tables(exclusive_start_table_name: next_token)
           data += tables
             .table_names
-            .collect { |t| ddb.describe_table(table_name: t).table.to_h }
-            .select { |t| yield t }
+            .collect { |t| ddb.describe_table(table_name: t).table }
             .each { |t| standardize(t) }
 
           next_token = tables.last_evaluated_table_name
@@ -34,14 +27,13 @@ module AwsAccountJanitor
         data
       end
 
-      def is_orphaned?(i)
-        @threshold ||= Time.new.ago(7)
-        i[:creation_date_time] < @threshold
-      end
-
       def standardize(t)
-        t["daily_cost"] = table_daily_cost(t) * 24
-        t["create_time"] = t[:creation_date_time]
+        t = to_hash(t)
+        t[:daily_cost] = table_daily_cost(t) * 24
+        t[:create_time] = t[:creation_date_time]
+
+        cloudtrail = Aws::CloudTrail::Client.new(region: Aws.config[:region])
+        binding.pry
       end
 
       def table_daily_cost(t)

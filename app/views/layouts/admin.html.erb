@@ -64,37 +64,37 @@
                                       <%= link_to "Daily Usage", { controller: "janitor", action: "usage_dashboard", account_id: params[:account_id] } %>
                                     </li>
                                     <li>
-                                      <%= link_to "Orphaned Resources", { controller: "janitor", action: "dashboard", account_id: params[:account_id] } %>
+                                      <%= link_to "Improperly Tagged", { controller: "janitor", action: "dashboard", account_id: params[:account_id] } %>
                                     </li>
                                   </ul>
                                 </li>
                                 <li>
                                   <a>
-                                    <i class="fa aws-icon aws-icon-ec2"> </i>
-                                    EC2
+                                    Tag Violations
                                     <span class="fa fa-chevron-down"></span>
                                   </a>
                                   <ul class="nav child_menu" style="display: none">
                                       <li>
-                                        <%= link_to "Orphaned Instances", { controller: "ec2", action: "orphaned_instances", account_id: params[:account_id] } %>
+                                        <%= link_to "EC2 Instances", { controller: "ec2", action: "orphaned_instances", account_id: params[:account_id] } %>
                                       </li>
                                       <li>
-                                        <%= link_to "Orphaned ASGs", { controller: "ec2", action: "orphaned_asgs", account_id: params[:account_id] } %>
+                                        <%= link_to "EC2 Volumes", { controller: "ec2", action: "orphaned_volumes", account_id: params[:account_id] } %>
                                       </li>
                                       <li>
-                                        <%= link_to "Orphaned Volumes", { controller: "ec2", action: "orphaned_volumes", account_id: params[:account_id] } %>
+                                        <%= link_to "RDS", { controller: "database", action: "orphaned_rds", account_id: params[:account_id] } %>
                                       </li>
                                   </ul>
                                 </li>
-                                <li><a><i class="fa aws-icon aws-icon-rds"></i> RDS <span class="fa fa-chevron-down"></span></a>
-                                    <ul class="nav child_menu" style="display: none">
-                                        <li>
-                                          <%= link_to "Dynamo DB", { controller: "database", action: "orphaned_ddb", account_id: params[:account_id] } %>
-                                        </li>
-                                        <li>
-                                          <%= link_to "RDS", { controller: "database", action: "orphaned_rds", account_id: params[:account_id] } %>
-                                        </li>
-                                    </ul>
+                                <li>
+                                  <a>
+                                    Underutilized
+                                    <span class="fa fa-chevron-down"></span>
+                                  </a>
+                                  <ul class="nav child_menu" style="display: none">
+                                      <li>
+                                        <%= link_to "Dynamo DB", { controller: "database", action: "orphaned_ddb", account_id: params[:account_id] } %>
+                                      </li>
+                                  </ul>
                                 </li>
                                 <li>
                                     <a>

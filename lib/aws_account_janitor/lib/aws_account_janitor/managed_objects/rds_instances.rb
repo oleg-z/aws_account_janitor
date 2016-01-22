@@ -1,12 +1,8 @@
 module AwsAccountJanitor
   class ManagedObjects
     class RDSInstances < Abstract
-      REQUIRED_TAGS = ["Owner", "Project"]
-
-      def orphaned
-        {
-          rds_orphaned_tables: all { |db| is_orphaned?(db) }
-        }
+      def improperly_tagged
+        { rds_orphaned_tables: all { |o| violate_tag_rules?(o) } }
       end
 
       private
@@ -34,12 +30,6 @@ module AwsAccountJanitor
         end
 
         data
-      end
-
-      def is_orphaned?(i)
-        @threshold ||= Time.new.ago(7)
-        i[:instance_create_time] < @threshold &&
-        ( !tag_exists?(i, 'Owner') || !tag_exists?(i, 'Project') )
       end
 
       def resource_arn(db)

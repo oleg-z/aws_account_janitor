@@ -8,6 +8,8 @@ require_relative 'managed_objects/abstract'
 require_relative 'managed_objects/ec2_instances'
 require_relative 'managed_objects/rds_instances'
 require_relative 'managed_objects/ddb_tables'
+require_relative 'managed_objects/ec2_asgs'
+require_relative 'managed_objects/ec2_volumes'
 
 module AwsAccountJanitor
   class Account
@@ -37,37 +39,14 @@ module AwsAccountJanitor
       @ec2 ||= Aws::EC2::Client.new
     end
 
-    def asg
-      @asg ||= Aws::AutoScaling::Client.new
-    end
-
-    def analyze
-      analyze_instances
-    end
-
     def managed_objects
       [
+        ManagedObjects::EC2Asgs.new(account: self),
+        ManagedObjects::EC2Volumes.new(account: self),
         ManagedObjects::DDBTables.new(account: self),
         ManagedObjects::EC2Instances.new(account: self),
         ManagedObjects::RDSInstances.new(account: self)
       ]
-    end
-
-    def abandoned_asgs
-      asg
-        .describe_auto_scaling_groups
-        .auto_scaling_groups
-        .select { |asg| asg.instances.size == 0 }
-        .collect { |asg| asg.as_json }
-    end
-
-    def abandoned_volumes
-      volume_filter = [{ name: "status" , values: ["available", "error"] }]
-      ec2
-        .describe_volumes(filters: volume_filter)
-        .volumes
-        .collect { |v| v.to_h }
-        .each { |v| v["cost"] = volume_cost(v) }
     end
 
     def daily_spending_rate
@@ -87,11 +66,6 @@ module AwsAccountJanitor
 
     private
 
-    def volume_cost(volume)
-      prices = Global.ebs_prices(@region)
-      iops_cost = prices[volume[:volume_type]]["per_iops"]*volume[:iops].to_i
-      gb_cost = prices[volume[:volume_type]]["per_gb"]*volume[:size].to_i
-      ((gb_cost + iops_cost)/30).round(2)
-    end
+
   end
 end

@@ -1,6 +1,6 @@
 <div class="page-title">
   <div class="title_left">
-    <h3> Orphaned Resources </h3>
+    <h3> Improperly Tagged Resources </h3>
   </div>
 </div>
 <div class="clearfix"></div>
@@ -25,7 +25,7 @@
             <span>
               <%=
                 link_to(
-                  route_info[:action].humanize.titleize,
+                  route_info[:label].to_s.humanize.titleize,
                   { controller: route_info[:controller], action: route_info[:action], account_id: account_id }
                 )
               %>

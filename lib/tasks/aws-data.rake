@@ -49,7 +49,7 @@ namespace :aws_data do
           janitor = AwsAccountJanitor::Account.new(region: region, account_number: account.identifier)
 
           janitor.managed_objects.each do |object|
-            object.orphaned.each do |data_label, data|
+            object.improperly_tagged.each do |data_label, data|
               r = AwsRecord.find_by(account_id: account.id, data_type: data_label, aws_region: janitor.region)
               if r
                 r.data = data
@@ -64,18 +64,6 @@ namespace :aws_data do
               r.save
             end
           end
-
-          #log_action(account, region, "Getting ec2 orphaned ASGs")
-          #orphaned_asgs(account, janitor)
-          #
-          #log_action(account, region, "Getting ec2 daily spending rate")
-          #instances_spending_rate(account, janitor)
-          #
-          #log_action(account, region, "Getting ec2 abandoned volumes")
-          #orphaned_volumes(account, janitor)
-          #
-          #log_action(account, region, "Getting ddb tables")
-          #orphaned_ddb_tables(account, janitor)
         rescue Aws::EC2::Errors::AuthFailure => _e
           Rails.logger.error("Failed to switch to '#{account.alias}' account")
         rescue Aws::AutoScaling::Errors::InvalidClientTokenId => _e
