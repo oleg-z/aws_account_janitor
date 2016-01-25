@@ -2,13 +2,21 @@ module AwsAccountJanitor
   class ManagedObjects
     class EC2Instances < Abstract
       def improperly_tagged
-        { ec2_abandoned_instances: all.select { |o| violate_tag_rules?(o) } }
+        {
+          ec2_abandoned_instances: all
+            .reject { |o| o[:instance_lifecycle] == "spot" }
+            .select { |o| violate_tag_rules?(o) }
+        }
       end
 
       def underutilized
         cloudwatch = Aws::CloudWatch::Client.new(region: Aws.config[:region])
 
-        all.each do |i|
+        instances_stats = all.collect do |i|
+          next unless i[:create_time] < Time.now - 5.days
+          next if i[:instance_lifecycle] == "spot"
+          next if i[:instance_type].start_with?("t2")
+
           metrics = cloudwatch.get_metric_statistics(
               namespace: 'AWS/EC2',
               metric_name: 'CPUUtilization',
@@ -20,9 +28,10 @@ module AwsAccountJanitor
               unit: "Percent"
             ).datapoints
           i[:cpu_utilization] = metrics.first.maximum
+          i
         end
 
-        { ec2_underutilized_instances: all.select { |o| o[:cpu_utilization] < 20 } }
+        { ec2_underutilized_instances: instances_stats.compact.select { |o| o[:cpu_utilization] < 20 } }
       end
 
       private
