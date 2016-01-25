@@ -20,6 +20,24 @@ jQuery(function($) {
 
         event.preventDefault();
     });
+
+    // Set up the toggle effect:
+    $('.read-more-show').on('click', function(e) {
+        var p = $(this).next('.read-more-content');
+        $(this).toggleClass('hide');
+        p.toggleClass('hide');
+        p.next('.read-more-hide').toggleClass('hide');
+        e.preventDefault();
+    });
+
+    // Changes contributed by @diego-rzg
+    $('.read-more-hide').on('click', function(e) {
+        var p = $(this).prev('.read-more-content');
+        $(this).toggleClass('hide');
+        p.toggleClass('hide');
+        p.prev('.read-more-show').toggleClass('hide');
+        e.preventDefault();
+    });
 });
 
 jQuery(function($) {

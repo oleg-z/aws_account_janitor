@@ -5,9 +5,6 @@ module AwsAccountJanitor
         { "tag_violation_volumes" => all.select { |o| violate_tag_rules?(o) } }
       end
 
-      def underused
-      end
-
       private
 
       def ec2

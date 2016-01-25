@@ -1,0 +1,36 @@
+content_for
+
+<%= render layout: 'janitor/report_layout' do |region| %>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th></th>
+        <th></th>
+        <th>Instance Id</th>
+        <th>Instance Type</th>
+        <th>Launch Time</th>
+        <th>7 days Max CPU, %</th>
+        <th>Tags</th>
+      </tr>
+    </thead>
+    <% @data_by_region[region].sort_by { |i| i["daily_cost"] }.reverse.each do |instances| %>
+      <tr>
+        <td><%= render "shared/item_menu" %></td>
+        <td>
+          <%= render partial: "shared/item_checkbox", locals: { aws_object_id: instances["instance_id"] } %>
+        </td>
+        <td>
+          <a href='<%= ec2_instance_link(region, instances["instance_id"]) %>'> <%= instances["instance_id"] %> </a>
+        </td>
+        <td> <%= instances["instance_type"] %> </td>
+        <td> <%= Time.parse(instances["launch_time"]).strftime("%F") %> </td>
+        <td> <%= instances["cpu_utilization"].to_f.round(2) %>% </td>
+        <td>
+          <%= render partial: 'janitor/tags', locals: { tags: instances["tags"] } %>
+        </td>
+        <!--<td> <%= instances.to_json %> </td>-->
+      </tr>
+    <% end %>
+  </table>
+<% end %>
+

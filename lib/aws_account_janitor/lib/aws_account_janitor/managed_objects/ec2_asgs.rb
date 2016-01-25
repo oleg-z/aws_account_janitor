@@ -5,9 +5,6 @@ module AwsAccountJanitor
         { "tag_violation_asgs" => all.select { |o| violate_tag_rules?(o) }  }
       end
 
-      def underused
-      end
-
       private
 
       def asg

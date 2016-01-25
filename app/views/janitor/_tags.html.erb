@@ -1,0 +1,15 @@
+<% sort_tags(tags)[0..2].to_a.each do |t| %>
+  <% tag_value = t["value"].size < 50 ? t["value"] : "#{t["value"][0...50]}..." %>
+  <%= "#{t["key"]}: #{tag_value}" %>
+  <br>
+<% end %>
+
+<a class="read-more-show" href="#">More</a>
+<div class='read-more-content hide'>
+  <% sort_tags(tags)[3..-1].to_a.each do |t| %>
+    <% tag_value = t["value"].size < 50 ? t["value"] : "#{t["value"][0...50]}..." %>
+    <%= "#{t["key"]}: #{tag_value}" %>
+    <br>
+  <% end %>
+</div>
+<a class="read-more-hide hide" href="#">Less</a>

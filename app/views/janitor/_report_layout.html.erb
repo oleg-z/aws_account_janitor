@@ -1,0 +1,50 @@
+<div class="row tile_count">
+    <div class="col-md-8 col-sm-4 col-xs-4">
+      <h3> Underutilized Resources: <%= page_label %> </h3>
+    </div>
+    <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+        <div class="left"></div>
+        <div class="right">
+            <span class="count_top">
+              <i class="fa fa-cloud"></i> <%= page_label %>
+            </span>
+            <div class="count"><%= @data_by_region.values.collect(&:size).sum %> </div>
+        </div>
+    </div>
+    <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+        <div class="left"></div>
+        <div class="right">
+            <span class="count_top">
+              <i class="fa fa-usd"></i> Cost per day
+            </span>
+            <div class="count"><%= @data_by_region.keys.collect{ |r| @cost_by_region[r] }.sum.round(2) %> </div>
+        </div>
+    </div>
+</div>
+
+<div class='row'>
+  <div class='col-md-12'>
+    <div class='x_panel'>
+    <% if @data_by_region.keys.empty? %>
+      <div class="alert alert-info" role="alert">Congratulations! All your <%= page_label %> are tagged correctly. </div>
+    <% end %>
+
+    <ul id='regions' class="nav nav-tabs" role="tablist">
+      <% @data_by_region.keys.each_with_index do |region, i| %>
+        <li region='<%= region %>' role="presentation" class="<%= i == 0 ? "active": "" %>">
+          <a href="#<%= region %>" aria-controls="<%= region %>" role="tab" data-toggle="tab"><%= region %> <span class="label label-default"> <%= @data_by_region[region].size %></span> </a>
+        </li>
+      <% end %>
+    </ul>
+
+    <%= render "shared/item_tag_dialog" %>
+
+    <div class="tab-content">
+      <% @data_by_region.keys.each_with_index do |region, i| %>
+        <div role="tabpanel" class="tab-pane <%= i == 0 ? "active": "" %>" id="<%= region %>">
+            <%= yield region %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

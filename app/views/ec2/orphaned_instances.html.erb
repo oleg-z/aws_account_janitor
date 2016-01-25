@@ -9,7 +9,7 @@
             <span class="count_top">
               <i class="fa fa-cloud"></i> Instances
             </span>
-            <div class="count"><%= @abandoned_instances.values.collect(&:size).sum %> </div>
+            <div class="count"><%= @data_by_region.values.collect(&:size).sum %> </div>
         </div>
     </div>
     <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
@@ -18,7 +18,7 @@
             <span class="count_top">
               <i class="fa fa-usd"></i> Cost per day
             </span>
-            <div class="count"><%= @abandoned_instances.keys.collect{ |r| @spending_rate_by_region[r] }.sum.round(2) %> </div>
+            <div class="count"><%= @data_by_region.keys.collect{ |r| @cost_by_region[r] }.sum.round(2) %> </div>
         </div>
     </div>
 </div>
@@ -26,14 +26,14 @@
 <div class='row'>
   <div class='col-md-12'>
     <div class='x_panel'>
-    <% if @abandoned_instances.keys.empty? %>
+    <% if @data_by_region.keys.empty? %>
       <div class="alert alert-info" role="alert">Congratulations! You have no orhaned instances.</div>
     <% end %>
 
     <ul id='regions' class="nav nav-tabs" role="tablist">
-      <% @abandoned_instances.keys.each_with_index do |region, i| %>
+      <% @data_by_region.keys.each_with_index do |region, i| %>
         <li region='<%= region %>' role="presentation" class="<%= i == 0 ? "active": "" %>">
-          <a href="#<%= region %>" aria-controls="<%= region %>" role="tab" data-toggle="tab"><%= region %> <span class="label label-default"> <%= @abandoned_instances[region].size %></span> </a>
+          <a href="#<%= region %>" aria-controls="<%= region %>" role="tab" data-toggle="tab"><%= region %> <span class="label label-default"> <%= @data_by_region[region].size %></span> </a>
         </li>
       <% end %>
     </ul>
@@ -41,7 +41,7 @@
     <%= render "shared/item_tag_dialog" %>
 
     <div class="tab-content">
-      <% @abandoned_instances.keys.each_with_index do |region, i| %>
+      <% @data_by_region.keys.each_with_index do |region, i| %>
         <div role="tabpanel" class="tab-pane <%= i == 0 ? "active": "" %>" id="<%= region %>">
           <table class="table table-striped">
             <thead>
@@ -55,16 +55,15 @@
                 <th>Tags</th>
               </tr>
             </thead>
-            <% @abandoned_instances[region].each do |instances| %>
+            <% @data_by_region[region].each do |instances| %>
               <tr>
                 <td><%= render "shared/item_menu" %></td>
                 <td>
                   <%= render partial: "shared/item_checkbox", locals: { aws_object_id: instances["instance_id"] } %>
                 </td>
                 <td>
-                  <a href='https://console.aws.amazon.com/ec2/v2/home?region=<%= region %>#Instances:search=<%= instances["instance_id"] %>'>
-                    <%= instances["instance_id"] %>
-                  </a> </td>
+                  <a href='<%= ec2_instance_link(region, instances["instance_id"]) %>'> <%= instances["instance_id"] %> </a>
+                </td>
                 <td> <%= instances["instance_type"] %> </td>
                 <td> <%= Time.parse(instances["launch_time"]).strftime("%F") %> </td>
                 <td> <%= instances["daily_cost"].to_f.round(2) %> </td>

@@ -5,6 +5,26 @@ module AwsAccountJanitor
         { ec2_abandoned_instances: all.select { |o| violate_tag_rules?(o) } }
       end
 
+      def underutilized
+        cloudwatch = Aws::CloudWatch::Client.new(region: Aws.config[:region])
+
+        all.each do |i|
+          metrics = cloudwatch.get_metric_statistics(
+              namespace: 'AWS/EC2',
+              metric_name: 'CPUUtilization',
+              dimensions: [ { name: "InstanceId", value: i[:instance_id] } ],
+              start_time: Time.now - 86400*7,
+              end_time: Time.now ,
+              statistics: ["Maximum"],
+              period: 86400*7,
+              unit: "Percent"
+            ).datapoints
+          i[:cpu_utilization] = metrics.first.maximum
+        end
+
+        { ec2_underutilized_instances: all.select { |o| o[:cpu_utilization] < 20 } }
+      end
+
       private
 
       def ec2
@@ -12,6 +32,7 @@ module AwsAccountJanitor
       end
 
       def all
+        return @all if @all
         instance_filter = [
           { name: "instance-state-name" , values: ["running"] }
         ]
@@ -31,7 +52,7 @@ module AwsAccountJanitor
           break unless next_token
         end
 
-        data
+        @all = data
       end
 
       def standardize(i)

@@ -3,14 +3,7 @@ AWS_REGIONS = %w(us-east-1 us-west-1 us-west-2 eu-west-1 eu-central-1 sa-east-1 
 namespace :aws_data do
   desc 'Fetches aws data and save it to databass'
 
-  task :fetch do
-    if Rails.env.development?
-      Rails.logger = Logger.new(STDOUT)
-    else
-      Rails.logger = Logger.new(Rails.root.join('log', 'daemon.log'))
-    end
-    Rails.logger.level = Logger.const_get((ENV['LOG_LEVEL'] || 'info').upcase)
-
+  task :fetch => [:environment, :logger] do
     if Rails.env.production?
       Process.daemon(true, true)
       #if ENV['PIDFILE']
@@ -22,22 +15,34 @@ namespace :aws_data do
     end
 
     task_frequency = {
-      billing: 3600 * 3,
-      fetch_internal: 1800
+      fetch_internal: 1800,
+      billing: 3600 * 3
     }
 
     last_execution = {}
     loop do
       task_frequency.each do |task, frequency|
-        next unless Time.now.to_i - last_execution[task].to_i >= frequency
+        if Time.now.to_i - last_execution[task].to_i < frequency
+          puts "Next execution in #{Time.now.to_i - last_execution[task].to_i}"
+          next
+        end
         Rake::Task["aws_data:#{task}"].invoke
         last_execution[task] = Time.now
       end
-      sleep 1
+      sleep 60
     end
   end
 
-  task :fetch_internal => [:environment, :ec2] do
+  task :logger => [:environment] do
+    if Rails.env.development?
+      Rails.logger = Logger.new(STDOUT)
+    else
+      Rails.logger = Logger.new(Rails.root.join('log', 'daemon.log'))
+    end
+    Rails.logger.level = Logger.const_get((ENV['LOG_LEVEL'] || 'info').upcase)
+  end
+
+  task :fetch_internal => [:logger, :ec2] do
   end
 
   task :ec2 do
@@ -49,20 +54,14 @@ namespace :aws_data do
           janitor = AwsAccountJanitor::Account.new(region: region, account_number: account.identifier)
 
           janitor.managed_objects.each do |object|
-            object.improperly_tagged.each do |data_label, data|
-              r = AwsRecord.find_by(account_id: account.id, data_type: data_label, aws_region: janitor.region)
-              if r
-                r.data = data
-              else
-                r = AwsRecord.new(
-                  data_type:  data_label,
-                  account_id: account.id,
-                  aws_region: janitor.region,
-                  data:       data
-                )
+            {}
+              .merge(object.underutilized)
+              .merge(object.improperly_tagged)
+              .each do |data_label, data|
+                r = AwsRecord.find_by(account_id: account.id, data_type: data_label, aws_region: janitor.region)
+                r ? r.data = data : r = AwsRecord.new(data_type: data_label, account_id: account.id, aws_region: janitor.region, data: data)
+                r.save
               end
-              r.save
-            end
           end
         rescue Aws::EC2::Errors::AuthFailure => _e
           Rails.logger.error("Failed to switch to '#{account.alias}' account")
@@ -75,7 +74,7 @@ namespace :aws_data do
     end
   end
 
-  task :billing => [:environment] do
+  task :billing => [:logger] do
     AwsAccount.all.each do |account|
       next if account.billing_bucket.to_s.strip == ""
       @credentials = {}
@@ -104,6 +103,12 @@ namespace :aws_data do
             end
           end
         end
+      rescue Aws::EC2::Errors::AuthFailure => _e
+        Rails.logger.error("Failed to switch to '#{account.alias}' account")
+      rescue Aws::AutoScaling::Errors::InvalidClientTokenId => _e
+        Rails.logger.error("Failed to switch to '#{account.alias}' account")
+      rescue => e
+        log_action(account, region, "Failed to complete action block: #{e}")
       end
     end
   end
@@ -140,55 +145,5 @@ namespace :aws_data do
       )
       Aws.config.update(credentials: credentials)
     end
-  end
-
-  def instances_spending_rate(account, janitor)
-    r = AwsRecord.new(
-      data_type:  :ec2_daily_rate,
-      account_id: account.id,
-      aws_region: janitor.region,
-      data:       janitor.daily_spending_rate
-    )
-    r.save
-  end
-
-  def orphaned_asgs(account, janitor)
-    r = AwsRecord.new(
-      data_type:  :ec2_abandoned_asgs,
-      account_id: account.id,
-      aws_region: janitor.region,
-      data:       janitor.abandoned_asgs
-    )
-    r.save
-  end
-
-  def orphaned_volumes(account, janitor)
-    r = AwsRecord.new(
-      data_type:  :ec2_abandoned_volumes,
-      account_id: account.id,
-      aws_region: janitor.region,
-      data:       janitor.abandoned_volumes
-    )
-    r.save
-  end
-
-  def orphaned_ddb_tables(account, janitor)
-    r = AwsRecord.new(
-      data_type:  :ddb_abandoned_tables,
-      account_id: account.id,
-      aws_region: janitor.region,
-      data:       janitor.ddb_abandoned_tables
-    )
-    r.save
-  end
-
-  def orphaned_rds(account, janitor)
-    r = AwsRecord.new(
-      data_type:  :rds_orphaned_tables,
-      account_id: account.id,
-      aws_region: janitor.region,
-      data:       janitor.rds_orphaned_dbs
-    )
-    r.save
   end
 end

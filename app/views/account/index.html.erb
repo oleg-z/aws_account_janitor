@@ -24,7 +24,7 @@
           </tr>
         </thead>
         <tbody>
-          <% @accounts.sort_by(&:alias).each do |a| %>
+          <% @accounts.sort_by { |a| a.alias.capitalize }.each do |a| %>
             <tr>
               <td> <%= link_to a.alias, "account/#{a.id}" %> </td>
               <td> <%= a.access_key %> </td>

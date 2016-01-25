@@ -10,6 +10,7 @@ require_relative 'managed_objects/rds_instances'
 require_relative 'managed_objects/ddb_tables'
 require_relative 'managed_objects/ec2_asgs'
 require_relative 'managed_objects/ec2_volumes'
+require_relative 'managed_objects/ec2_snapshots'
 
 module AwsAccountJanitor
   class Account
@@ -41,6 +42,7 @@ module AwsAccountJanitor
 
     def managed_objects
       [
+        ManagedObjects::EC2Snapshots.new(account: self),
         ManagedObjects::EC2Asgs.new(account: self),
         ManagedObjects::EC2Volumes.new(account: self),
         ManagedObjects::DDBTables.new(account: self),

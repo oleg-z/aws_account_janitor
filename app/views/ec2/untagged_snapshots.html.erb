@@ -1,13 +1,13 @@
 <!-- top tiles -->
 <div class="row tile_count">
     <div class="col-md-8 col-sm-4 col-xs-4">
-      <h3> Tag Violations: Volumes </h3>
+      <h3> Tag Violations: <%= page_label %> </h3>
     </div>
     <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
         <div class="left"></div>
         <div class="right">
             <span class="count_top">
-              <i class="fa fa-cloud"></i> Volumes
+              <i class="fa fa-cloud"></i> <%= page_label %>
             </span>
             <div class="count"><%= @data_by_region.values.collect(&:size).sum %> </div>
         </div>
@@ -27,7 +27,7 @@
   <div class='col-md-12'>
     <div class='x_panel'>
     <% if @data_by_region.keys.empty? %>
-      <div class="alert alert-info" role="alert">Congratulations! You have no orhaned volumes.</div>
+      <div class="alert alert-info" role="alert">Congratulations! All your <%= page_label %> are tagged correctly. </div>
     <% end %>
 
     <ul id='regions' class="nav nav-tabs" role="tablist">
@@ -49,12 +49,9 @@
               <tr>
                 <th></th>
                 <th></th>
-                <th>Volume Id</th>
-                <th>State</th>
+                <th>Snapshot Id</th>
                 <th>Create Time</th>
-                <th>Type</th>
                 <th>Size</th>
-                <th>IOPS</th>
                 <th>$/day</th>
                 <th>Tags</th>
               </tr>
@@ -67,13 +64,10 @@
                 </td>
                 <td>
                   <a href='https://console.aws.amazon.com/ec2/v2/home?region=<%= region %>#Volumes:search=<%= volume["volume_id"] %>'>
-                    <%= volume["volume_id"] %>
+                    <%= volume["snapshot_id"] %>
                   </a> </td>
-                <td> <%= volume["state"] %> </td>
                 <td> <%= Time.parse(volume["create_time"]).strftime("%F") %> </td>
-                <td> <%= volume["volume_type"] %> </td>
-                <td> <%= volume["size"] %> </td>
-                <td> <%= volume["iops"] %> </td>
+                <td> <%= volume["volume_size"] %> </td>
                 <td> <%= volume["daily_cost"] %> </td>
                 <td>
                   <% volume["tags"].to_a.each do |t| %>

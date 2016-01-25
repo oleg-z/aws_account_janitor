@@ -18,11 +18,11 @@ module AwsAccountJanitor
       end
 
       def improperly_tagged
-        []
+        {}
       end
 
-      def underused
-        []
+      def underutilized
+        {}
       end
 
       def tags
