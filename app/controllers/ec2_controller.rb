@@ -59,24 +59,5 @@ class Ec2Controller < JanitorController
     @cost_by_region = calculate_daily_cost(@data_by_region)
   end
 
-  private
 
-  def get_records(region, data_type)
-    r = AwsRecord
-      .where(account_id: current_account.id, aws_region: region, data_type: data_type)
-      .order("created_at DESC")
-      .limit(1)
-      .last
-    return [] unless r
-
-    r.data.to_a
-  end
-
-  def calculate_daily_cost(data_by_region)
-    @spending_rate_by_region = {}
-    data_by_region.each do |region, data|
-      @spending_rate_by_region[region] = @data_by_region[region].inject(0) { |sum, i| sum += i["daily_cost"].to_f }.round(2)
-    end
-    @spending_rate_by_region
-  end
 end

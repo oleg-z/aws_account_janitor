@@ -1,0 +1,36 @@
+content_for
+
+<%= render layout: 'janitor/report_layout' do |region| %>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th></th>
+        <th></th>
+        <th>Table Name</th>
+        <th>Daily Cost</th>
+        <th>Utilization, %</th>
+        <th>Read IOPS</th>
+        <th>Write IOPS</th>
+        <th>Item Count</th>
+        <th>Launch Time</th>
+      </tr>
+    </thead>
+    <% @data_by_region[region].sort_by { |i| i["daily_cost"] }.reverse.each do |item| %>
+      <tr>
+        <td><%= render "shared/item_menu" %></td>
+        <td>
+          <%= render partial: "shared/item_checkbox", locals: { aws_object_id: item["table_name"] } %>
+        </td>
+        <td>
+          <a href='<%= ddb_link(region, item) %>'> <%= item["table_name"] %> </a>
+        </td>
+        <td> <%= item["daily_cost"].to_f.round(2) %> </td>
+        <td> <%= item["utilization"].to_f.round(2) %>%</td>
+        <td> <%= item["provisioned_throughput"]["read_capacity_units"] %></td>
+        <td> <%= item["provisioned_throughput"]["write_capacity_units"] %></td>
+        <td> <%= item["item_count"] %> </td>
+        <td> <%= format_time(item["creation_date_time"]) %> </td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>

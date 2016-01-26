@@ -23,7 +23,7 @@ namespace :aws_data do
     loop do
       task_frequency.each do |task, frequency|
         if Time.now.to_i - last_execution[task].to_i < frequency
-          puts "Next execution in #{Time.now.to_i - last_execution[task].to_i}"
+          #puts "Next execution in #{Time.now.to_i - last_execution[task].to_i}"
           next
         end
 

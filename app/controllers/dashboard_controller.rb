@@ -5,13 +5,14 @@ class DashboardController < JanitorController
   skip_before_action :verify_authenticity_token
 
   DATA_TYPE_CONTROLLER_MAP = {
-    "ec2_abandoned_instances" => { controller: 'ec2', action: 'orphaned_instances', label: 'EC2 Instances' },
+    "ec2_abandoned_instances"     => { controller: 'ec2', action: 'orphaned_instances', label: 'EC2 Instances' },
     "ec2_underutilized_instances" => { controller: 'ec2', action: 'underutilized_instances', label: 'EC2 Instances' },
-    "tag_violation_volumes"   => { controller: 'ec2', action: 'orphaned_volumes', label: 'EC2 Volumes'},
-    "tag_violation_asgs"      => { controller: 'ec2', action: 'orphaned_asgs', label: 'EC2 ASGs' },
-    "tag_violation_snapshots" => { controller: 'ec2', action: 'untagged_snapshots', label: 'EC2 Snapshots' },
-    "ddb_abandoned_tables"    => { controller: 'database', action: 'orphaned_ddb', label: 'DDB Tables' },
-    "rds_orphaned_tables"     => { controller: 'database', action: 'orphaned_rds', label: 'RDS Instances' }
+    "tag_violation_volumes"       => { controller: 'ec2', action: 'orphaned_volumes', label: 'EC2 Volumes'},
+    "tag_violation_asgs"          => { controller: 'ec2', action: 'orphaned_asgs', label: 'EC2 ASGs' },
+    "tag_violation_snapshots"     => { controller: 'ec2', action: 'untagged_snapshots', label: 'EC2 Snapshots' },
+    "ddb_abandoned_tables"        => { controller: 'database', action: 'orphaned_ddb', label: 'DDB Tables' },
+    "rds_orphaned_tables"         => { controller: 'database', action: 'orphaned_rds', label: 'RDS Instances' },
+    "underutilized_ddb_tables"    => { controller: 'database', action: 'underutilized_ddb', label: 'DDB Tables' },
   }
 
   def tag_violations
@@ -47,7 +48,7 @@ class DashboardController < JanitorController
   def underutilized
     @review_required = {}
 
-    types = [:ec2_underutilized_instances]
+    types = [:ec2_underutilized_instances, :underutilized_ddb_tables]
 
     AwsAccount.all.each do |account|
       records = AwsRecord

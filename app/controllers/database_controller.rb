@@ -4,18 +4,16 @@ class DatabaseController < JanitorController
   protect_from_forgery with: :exception
   skip_before_action :verify_authenticity_token
 
-  def orphaned_ddb
-    @cost_by_region = {}
+  def underutilized_ddb
     @data_by_region = {}
-    @object_type = ""
-
+    @object_type = Aws::DynamoDB::Table
+    @cost_by_region = {}
     AWS_REGIONS.each do |region|
-      data = region_abandoned_ddb(region).sort_by { |i| i["creation_date_time"] }
-      next if data.empty?
-      @data_by_region[region] = data
-      @cost_by_region[region] = 0
-      @data_by_region[region].each { |i| @cost_by_region[region] += i["daily_cost"].to_f }
+      data = get_records(region, "underutilized_ddb_tables").sort_by { |i| i["daily_cost"] }
+      @data_by_region[region] = data unless data.empty?
     end
+    @cost_by_region = calculate_daily_cost(@data_by_region)
+
   end
 
   def orphaned_rds

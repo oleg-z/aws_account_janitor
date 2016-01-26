@@ -33,7 +33,7 @@ module AwsAccountJanitor
     end
 
     def self.ddb_prices(region)
-      return @prices if @prices
+      return @ddb_prices if @ddb_prices
       prices =
         JSON.parse(
           URI('https://a0.awsstatic.com/pricing/1/dynamodb/pricing-data-throughput.min.js')
@@ -46,7 +46,7 @@ module AwsAccountJanitor
 
       region_price = prices["config"]["regions"].detect { |r| r["region"] == region }
 
-      {
+      @ddb_prices = {
         "writes" => region_price["values"]["writes"]["prices"]["USD"].to_f,
         "reads" => region_price["values"]["writes"]["prices"]["USD"].to_f
       }

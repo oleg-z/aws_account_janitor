@@ -101,7 +101,7 @@
                                         <%= link_to "EC2 Instances", { controller: "ec2", action: "underutilized_instances", account_id: params[:account_id] } %>
                                       </li>
                                       <li>
-                                        <%= link_to "Dynamo DB", { controller: "database", action: "orphaned_ddb", account_id: params[:account_id] } %>
+                                        <%= link_to "Dynamo DB", { controller: "database", action: "underutilized_ddb", account_id: params[:account_id] } %>
                                       </li>
                                   </ul>
                                 </li>

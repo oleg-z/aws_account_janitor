@@ -14,7 +14,7 @@ Rails.application.routes.draw do
   get 'ec2/untagged_snapshots'
   post 'ec2/update_tags'
 
-  get 'database/orphaned_ddb'
+  get 'database/underutilized_ddb'
   get 'database/orphaned_rds'
   post 'database/update_tags'
 
