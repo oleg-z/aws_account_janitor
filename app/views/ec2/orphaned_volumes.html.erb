@@ -76,11 +76,7 @@
                 <td> <%= volume["iops"] %> </td>
                 <td> <%= volume["daily_cost"] %> </td>
                 <td>
-                  <% volume["tags"].to_a.each do |t| %>
-                    <% tag_value = t["value"].size < 50 ? t["value"] : "#{t["value"][0...50]}..." %>
-                    <%= "#{t["key"]}: #{tag_value}" %>
-                    <br>
-                  <% end %>
+                    <%= render partial: 'janitor/tags', locals: { tags: volume["tags"] } %>
                 </td>
               </tr>
             <% end %>

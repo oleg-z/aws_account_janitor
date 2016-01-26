@@ -39,11 +39,7 @@
                   </a> </td>
                 <td> <%= Time.parse(asg["created_time"]).strftime("%F") %> </td>
                 <td>
-                  <% asg["tags"].each do |t| %>
-                    <% tag_value = t["value"].size < 50 ? t["value"] : "#{t["value"][0...50]}..." %>
-                    <%= "#{t["key"]}: #{tag_value}" %>
-                    <br>
-                  <% end %>
+                  <%= render partial: 'janitor/tags', locals: { tags: asg["tags"] } %>
                 </td>
               </tr>
             <% end %>

@@ -68,13 +68,8 @@
                 <td> <%= Time.parse(instances["launch_time"]).strftime("%F") %> </td>
                 <td> <%= instances["daily_cost"].to_f.round(2) %> </td>
                 <td>
-                  <% instances["tags"].to_a.each do |t| %>
-                    <% tag_value = t["value"].size < 50 ? t["value"] : "#{t["value"][0...50]}..." %>
-                    <%= "#{t["key"]}: #{tag_value}" %>
-                    <br>
-                  <% end %>
+                    <%= render partial: 'janitor/tags', locals: { tags: instances["tags"] } %>
                 </td>
-                <!--<td> <%= instances.to_json %> </td>-->
               </tr>
             <% end %>
           </table>

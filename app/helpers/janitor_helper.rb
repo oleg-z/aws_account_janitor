@@ -17,7 +17,7 @@ module JanitorHelper
 
   def sort_tags(tags)
     return [] if tags.nil?
-    tags.select { |t| ["Name", "Owner", "Project"].include?(t["key"]) } + tags.reject { |t| ["Name", "Owner", "Project"].include?(t["key"]) }.sort_by { |t| t["key"]}.reverse
+    tags.select { |t| ["Name", "Owner", "Project"].include?(t["key"]) } + tags.reject { |t| ["Name", "Owner", "Project"].include?(t["key"]) }.sort_by { |t| t["key"]}
   end
 
   def update_url(new_params)

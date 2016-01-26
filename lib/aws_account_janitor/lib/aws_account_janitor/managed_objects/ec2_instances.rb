@@ -15,7 +15,7 @@ module AwsAccountJanitor
         instances_stats = all.collect do |i|
           next unless i[:create_time] < Time.now - 5.days
           next if i[:instance_lifecycle] == "spot"
-          next if i[:instance_type].start_with?("t2")
+          next if i[:instance_type].start_with?("t")
 
           metrics = cloudwatch.get_metric_statistics(
               namespace: 'AWS/EC2',
@@ -31,7 +31,7 @@ module AwsAccountJanitor
           i
         end
 
-        { ec2_underutilized_instances: instances_stats.compact.select { |o| o[:cpu_utilization] < 20 } }
+        { ec2_underutilized_instances: instances_stats.compact.select { |o| o[:cpu_utilization] < 30 } }
       end
 
       private

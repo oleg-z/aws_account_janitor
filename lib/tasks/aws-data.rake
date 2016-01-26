@@ -26,10 +26,16 @@ namespace :aws_data do
           puts "Next execution in #{Time.now.to_i - last_execution[task].to_i}"
           next
         end
-        Rake::Task["aws_data:#{task}"].invoke
-        last_execution[task] = Time.now
+
+        begin
+          Rake::Task["aws_data:#{task}"].invoke
+        rescue => e
+          log_action(account, region, "Failed to complete action '#{task}' block: #{e}")
+        ensure
+          last_execution[task] = Time.now
+          sleep 60
+        end
       end
-      sleep 60
     end
   end
 
