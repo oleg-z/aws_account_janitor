@@ -53,28 +53,23 @@ namespace :aws_data do
 
   task :ec2 do
     AwsAccount.all.each do |account|
-      @credentials = {}
       AWS_REGIONS.each do |region|
-        begin
+        janitor = error_trap(nil) {
           switch_account(account, region)
           janitor = AwsAccountJanitor::Account.new(region: region, account_number: account.identifier)
+        }
+        next unless janitor
 
-          janitor.managed_objects.each do |object|
-            {}
-              .merge(object.underutilized)
-              .merge(object.improperly_tagged)
-              .each do |data_label, data|
-                r = AwsRecord.find_by(account_id: account.id, data_type: data_label, aws_region: janitor.region)
-                r ? r.data = data : r = AwsRecord.new(data_type: data_label, account_id: account.id, aws_region: janitor.region, data: data)
-                r.save
-              end
-          end
-        rescue Aws::EC2::Errors::AuthFailure => _e
-          Rails.logger.error("Failed to switch to '#{account.alias}' account")
-        rescue Aws::AutoScaling::Errors::InvalidClientTokenId => _e
-          Rails.logger.error("Failed to switch to '#{account.alias}' account")
-        rescue => e
-          log_action(account, region, "Failed to complete action block: #{e}")
+        janitor.managed_objects.each do |object|
+          binding.pry if i == true
+          {}
+            .merge(error_trap({}) { object.underutilized })
+            .merge(error_trap({}) { object.improperly_tagged })
+            .each do |data_label, data|
+              r = AwsRecord.find_by(account_id: account.id, data_type: data_label, aws_region: janitor.region)
+              r ? r.data = data : r = AwsRecord.new(data_type: data_label, account_id: account.id, aws_region: janitor.region, data: data)
+              r.save
+            end
         end
       end
     end
@@ -117,6 +112,19 @@ namespace :aws_data do
         log_action(account, region, "Failed to complete action block: #{e}")
       end
     end
+  end
+
+  def error_trap(return_value)
+    yield
+  rescue Aws::EC2::Errors::AuthFailure => _e
+    Rails.logger.error("Authentication failure: #{e}")
+    return return_value
+  rescue Aws::AutoScaling::Errors::InvalidClientTokenId => _e
+    Rails.logger.error("Authentication failure: #{e}")
+    return return_value
+  rescue => e
+    Rails.logger.error("Error: #{e}")
+    return return_value
   end
 
   def log_action(account, region, message)
