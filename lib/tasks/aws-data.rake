@@ -1,4 +1,4 @@
-AWS_REGIONS = %w(us-east-1 us-west-1 us-west-2 eu-west-1 eu-central-1 sa-east-1 ap-southeast-2 ap-southeast-1 ap-northeast-1)
+AWS_REGIONS = %w(us-east-1 us-west-1 us-west-2 eu-west-1 eu-central-1 sa-east-1 ap-southeast-2 ap-southeast-1 ap-northeast-1 ap-northeast-2)
 
 namespace :aws_data do
   desc 'Fetches aws data and save it to databass'
@@ -21,21 +21,19 @@ namespace :aws_data do
 
     last_execution = {}
     loop do
-      task_frequency.each do |task, frequency|
-        if Time.now.to_i - last_execution[task].to_i < frequency
-          #puts "Next execution in #{Time.now.to_i - last_execution[task].to_i}"
-          next
-        end
+      task_frequency.each do |task_name, frequency|
+        last_execution[task_name] ||= Time.now - frequency - 1
+        next if Time.now - last_execution[task_name] < frequency
 
         begin
-          Rake::Task["aws_data:#{task}"].invoke
+          Rake::Task["aws_data:#{task_name}"].invoke
         rescue => e
-          log_action(account, region, "Failed to complete action '#{task}' block: #{e}")
+          Rails.logger.error("Failed to complete action '#{task_name}' block: #{e}")
         ensure
-          last_execution[task] = Time.now
-          sleep 60
+          last_execution[task_name] = Time.now
         end
       end
+      sleep 60
     end
   end
 
@@ -61,7 +59,6 @@ namespace :aws_data do
         next unless janitor
 
         janitor.managed_objects.each do |object|
-          binding.pry if i == true
           {}
             .merge(error_trap({}) { object.underutilized })
             .merge(error_trap({}) { object.improperly_tagged })
