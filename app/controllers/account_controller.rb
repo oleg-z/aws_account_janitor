@@ -6,10 +6,16 @@ class AccountController < JanitorController
 
   def index
     @accounts = AwsAccount.all()
+    render template: 'settings/account/index'
   end
 
   def new
+    render template: 'settings/account/new'
+  end
 
+  def show
+    @account = AwsAccount.find(params[:id])
+    render template: 'settings/account/show'
   end
 
   def create
@@ -46,9 +52,5 @@ class AccountController < JanitorController
   def destroy
     AwsAccount.find(params[:id]).delete
     redirect_to action: :index
-  end
-
-  def show
-    @account = AwsAccount.find(params[:id])
   end
 end

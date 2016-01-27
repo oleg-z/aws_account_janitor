@@ -4,11 +4,11 @@ class Ec2Controller < JanitorController
   protect_from_forgery with: :exception
   skip_before_action :verify_authenticity_token
 
-  def untagged_snapshots
+  def underutilized_snapshots
     @data_by_region = {}
     @object_type = Aws::EC2::Types::Snapshot
     AWS_REGIONS.each do |region|
-      data = get_records(region, :tag_violation_snapshots)
+      data = get_records(region, :underutilized_ec2_snapshots)
       @data_by_region[region] = data unless data.empty?
     end
     @cost_by_region = calculate_daily_cost(@data_by_region)

@@ -7,16 +7,19 @@ Rails.application.routes.draw do
   get '/underutilized' => 'dashboard#underutilized'
 
 
-  get 'ec2/orphaned_instances'
-  get 'ec2/underutilized_instances'
-  get 'ec2/orphaned_asgs'
-  get 'ec2/orphaned_volumes'
-  get 'ec2/untagged_snapshots'
+  get  'ec2/orphaned_instances'
+  get  'ec2/underutilized_instances'
+  get  'ec2/orphaned_asgs'
+  get  'ec2/orphaned_volumes'
+  get  'ec2/underutilized_snapshots'
   post 'ec2/update_tags'
 
-  get 'database/underutilized_ddb'
-  get 'database/orphaned_rds'
+  get  'database/underutilized_ddb'
+  get  'database/orphaned_rds'
   post 'database/update_tags'
+
+  get  'settings/notifications'
+  post 'settings/notifications'
 
   resources :account
 

@@ -42,8 +42,8 @@ module AwsAccountJanitor
 
     def managed_objects
       [
-        ManagedObjects::DDBTables.new(account: self),
         ManagedObjects::EC2Snapshots.new(account: self),
+        ManagedObjects::DDBTables.new(account: self),
         ManagedObjects::EC2Asgs.new(account: self),
         ManagedObjects::EC2Volumes.new(account: self),
         ManagedObjects::EC2Instances.new(account: self),

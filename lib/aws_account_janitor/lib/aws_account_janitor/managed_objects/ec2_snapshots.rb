@@ -1,8 +1,14 @@
 module AwsAccountJanitor
   class ManagedObjects
     class EC2Snapshots < Abstract
-      def improperly_tagged
-        { "tag_violation_snapshots" => all.select { |o| violate_tag_rules?(o) } }
+      def underutilized
+        ami_snapshots = ec2.describe_images(owners: [@account.account_number])
+          .images
+          .collect { |i| i.block_device_mappings.collect { |d| d.ebs.snapshot_id if d.ebs } }
+          .flatten
+          .compact
+
+        { "underutilized_ec2_snapshots" => all.select { |o| !ami_snapshots.include?(o[:snapshot_id]) } }
       end
 
       private
