@@ -84,9 +84,6 @@
                                         <%= link_to "EC2 Volumes", { controller: "ec2", action: "orphaned_volumes", account_id: params[:account_id] } %>
                                       </li>
                                       <li>
-                                        <%= link_to "EC2 Snapshots", { controller: "ec2", action: "untagged_snapshots", account_id: params[:account_id] } %>
-                                      </li>
-                                      <li>
                                         <%= link_to "RDS", { controller: "database", action: "orphaned_rds", account_id: params[:account_id] } %>
                                       </li>
                                   </ul>
@@ -103,6 +100,9 @@
                                       <li>
                                         <%= link_to "Dynamo DB", { controller: "database", action: "underutilized_ddb", account_id: params[:account_id] } %>
                                       </li>
+                                      <li>
+                                        <%= link_to "EC2 Snapshots", { controller: "ec2", action: "underutilized_snapshots", account_id: params[:account_id] } %>
+                                      </li>
                                   </ul>
                                 </li>
                                 <li>
@@ -114,6 +114,9 @@
                                     <ul class="nav child_menu" style="display: none">
                                         <li>
                                           <%= link_to "Accounts", { controller: "account", action: "index" } %>
+                                        </li>
+                                        <li>
+                                          <%= link_to "Notifications", { controller: "settings", action: "notifications" } %>
                                         </li>
                                     </ul>
                                 </li>

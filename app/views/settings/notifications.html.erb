@@ -1,0 +1,52 @@
+<div class='row'>
+  <div class='col-md-12'>
+    <div class='x_panel'>
+      <div class="x_title">
+          <h2>Notifications</small></h2>
+          <div class="clearfix"></div>
+      </div>
+      <div class="x_content">
+        <form action='<%= url_for(action: :notifications) %>' class="form-horizontal form-label-left" method='POST'>
+          <div class="form-group">
+            <label for="smtp_host" class="control-label col-md-3 col-sm-3 col-xs-12">Server Address</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <input type="text" class="form-control col-md-7 col-xs-12" name="smtp_host" placeholder="smpt.server.com" value="<%= @email_settings.smtp_host %>">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="smtp_port" class="control-label col-md-3 col-sm-3 col-xs-12">Port</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <input type="text" class="form-control col-md-7 col-xs-12" name="smtp_port" placeholder="25" value="<%= @email_settings.smtp_port %>">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="smtp_domain" class="control-label col-md-3 col-sm-3 col-xs-12">Domain</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <input type="text" class="form-control col-md-7 col-xs-12" name="smtp_domain" placeholder="" value="<%= @email_settings.smtp_domain %>">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="secret_key" class="control-label col-md-3 col-sm-3 col-xs-12">Admin Email</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <input type="text" class="form-control col-md-7 col-xs-12" name="smtp_admin_email" placeholder="" value="<%= @email_settings.smtp_admin_email %>">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="secret_key" class="control-label col-md-3 col-sm-3 col-xs-12">No-reply email address</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <input type="text" class="form-control col-md-7 col-xs-12" name="smtp_no_reply" placeholder="" value="<%= @email_settings.smtp_no_reply %>">
+            </div>
+          </div>
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+              <button id='button_test_settings' type="submit" class="btn btn btn-primary">Test Settings</button>
+              <input id='test_settings' type="hidden" name="test_settings" value="false">
+              <button type="submit" class="btn btn-default">Update</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

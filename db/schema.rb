@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160120184824) do
+ActiveRecord::Schema.define(version: 20160127194754) do
 
   create_table "aws_accounts", force: :cascade do |t|
     t.string   "alias"
@@ -52,6 +52,11 @@ ActiveRecord::Schema.define(version: 20160120184824) do
     t.text     "data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "settings", force: :cascade do |t|
+    t.string "field_name"
+    t.string "field_value"
   end
 
 end
