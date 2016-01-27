@@ -1,26 +1,22 @@
 class AccountMailer < ApplicationMailer
-  def use_settings(settings)
-    @settings = settings
-    apply_smtp_settings
+  after_action :set_delivery_options
+
+  def set_delivery_options
+    mail.delivery_method.settings[:address] = @smtp_settings.smtp_host
+    mail.delivery_method.settings[:port]    = @smtp_settings.smtp_port
+    mail.delivery_method.settings[:domain]  = @smtp_settings.smtp_domain
+    mail.delivery_method.settings[:address] = @smtp_settings.smtp_host
+    mail.delivery_method.settings[:enable_starttls_auto] = false
   end
 
-  def apply_smtp_settings(settings)
+  def mail_headers(settings)
     settings ||= EmailSettings.new
-    delivery_method = :smtp
-    smtp_settings = {
-      :address => settings.smtp_host,
-      :port    => settings.smtp_port,
-      :domain  => settings.smtp_domain,
-      :user_name=>nil,
-      :password=>nil,
-      :authentication=>nil,
-      :enable_starttls_auto=>false
-    }
     { reply_to: settings.smtp_no_reply, from: settings.smtp_no_reply, return_path: settings.smtp_no_reply}
   end
 
   def test_email(args)
-    mail_headers = apply_smtp_settings(args[:settings])
+    @smtp_settings = args[:settings] || EmailSettings.new
+    mail_headers = mail_headers(args[:settings])
     mail_headers[:to] = args[:to]
     mail_headers[:subject] = 'AWS dashboard test settings email'
     mail(mail_headers)
