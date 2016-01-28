@@ -1,4 +1,14 @@
 module JanitorHelper
+  # Returns true if an asset exists in the Asset Pipeline, false if not.
+  def asset_exists?(path)
+    begin
+      pathname = Rails.application.assets.resolve(path)
+      return !!pathname # double-bang turns String into boolean
+    rescue Sprockets::FileNotFound
+      return false
+    end
+  end
+
   def ddb_link(region, ddb)
     "https://console.aws.amazon.com/dynamodb/home?region=#{region}#tables:selected=#{ddb["table_name"]}"
   end

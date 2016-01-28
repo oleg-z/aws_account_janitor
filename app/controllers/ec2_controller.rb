@@ -7,7 +7,7 @@ class Ec2Controller < JanitorController
   def underutilized_snapshots
     @data_by_region = {}
     @object_type = Aws::EC2::Types::Snapshot
-    AWS_REGIONS.each do |region|
+    supported_aws_regions.each do |region|
       data = get_records(region, :underutilized_ec2_snapshots)
       @data_by_region[region] = data unless data.empty?
     end
@@ -18,7 +18,7 @@ class Ec2Controller < JanitorController
     @data_by_region = {}
     @object_type = Aws::EC2::Types::Instance
 
-    AWS_REGIONS.each do |region|
+    supported_aws_regions.each do |region|
       data = get_records(region, :ec2_abandoned_instances).sort_by { |i| i["create_time"] }
       @data_by_region[region] = data unless data.empty?
     end
@@ -29,7 +29,7 @@ class Ec2Controller < JanitorController
     @data_by_region = {}
     @object_type = Aws::EC2::Types::Instance
     @cost_by_region = {}
-    AWS_REGIONS.each do |region|
+    supported_aws_regions.each do |region|
       data = get_records(region, :ec2_underutilized_instances).sort_by { |i| i["create_time"] }
       @data_by_region[region] = data unless data.empty?
       @cost_by_region[region] = 0
@@ -39,7 +39,7 @@ class Ec2Controller < JanitorController
   def orphaned_asgs
     @data_by_region = {}
     @object_type = Aws::AutoScaling::Types::AutoScalingGroup
-    AWS_REGIONS.each do |region|
+    supported_aws_regions.each do |region|
       data = get_records(region, :tag_violation_asgs)
       @data_by_region[region] = data unless data.empty?
     end
@@ -51,7 +51,7 @@ class Ec2Controller < JanitorController
     @data_by_region = {}
     @object_type = Aws::EC2::Types::Volume
 
-    AWS_REGIONS.each do |region|
+    supported_aws_regions.each do |region|
       data = get_records(region, :tag_violation_volumes)
       @data_by_region[region] = data unless data.empty?
     end

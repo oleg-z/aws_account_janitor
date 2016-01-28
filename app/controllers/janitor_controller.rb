@@ -2,8 +2,6 @@ class JanitorController < ActionController::Base
   before_action :current_account, :account_list
   layout "admin"
 
-  AWS_REGIONS = %w(us-east-1 us-west-1 us-west-2 eu-west-1 eu-central-1 sa-east-1 ap-southeast-2 ap-southeast-1 ap-northeast-1)
-
   def update_tags
     object_type = params[:object_type]
     region = params[:region]
@@ -60,6 +58,10 @@ class JanitorController < ActionController::Base
   end
 
   protected
+
+  def supported_aws_regions
+    JanitorUi::SUPPORTED_AWS_REGIONS
+  end
 
   def current_account
     @current_account = params[:account_id] ? AwsAccount.find(params[:account_id]) : AwsAccount.all.first

@@ -1,5 +1,3 @@
-AWS_REGIONS = %w(us-east-1 us-west-1 us-west-2 eu-west-1 eu-central-1 sa-east-1 ap-southeast-2 ap-southeast-1 ap-northeast-1 ap-northeast-2)
-
 namespace :aws_data do
   desc 'Fetches aws data and save it to databass'
 
@@ -51,7 +49,7 @@ namespace :aws_data do
 
   task :ec2 do
     AwsAccount.all.each do |account|
-      AWS_REGIONS.each do |region|
+      JanitorUi::SUPPORTED_AWS_REGIONS.each do |region|
         janitor = error_trap(nil) {
           switch_account(account, region)
           janitor = AwsAccountJanitor::Account.new(region: region, account_number: account.identifier)

@@ -9,7 +9,6 @@ module AwsAccountJanitor
       end
 
       def violate_tag_rules?(i)
-        binding.pry if i.nil?
         (i[:tags].to_a.collect { |t| t[:key] } & REQUIRED_TAGS).empty?
       end
 
