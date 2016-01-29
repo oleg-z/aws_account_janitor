@@ -47,8 +47,12 @@
             <thead>
               <tr>
                 <th></th>
-                <th></th>
-                <th>Instance Id</th>
+                <th><input class='select-all' type="checkbox"></th>
+                <th>Instance Id
+                <a style='font-size: smaller' href='<%= ec2_instance_link(region, @data_by_region[region].collect { |v| v["instance_id"] }) %>' target='_blank'>
+                    (open_all)
+                </a>
+                </th>
                 <th>Instance Type</th>
                 <th>Launch Time</th>
                 <th>$/day</th>

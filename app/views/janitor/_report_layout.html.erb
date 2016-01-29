@@ -25,26 +25,42 @@
 <div class='row'>
   <div class='col-md-12'>
     <div class='x_panel'>
-    <% if @data_by_region.keys.empty? %>
-      <div class="alert alert-info" role="alert">Congratulations! All your <%= page_label %> are tagged correctly. </div>
-    <% end %>
+        <div class='x_content'>
+            <!--
+            <ul class="nav navbar-right panel_toolbox">
+                <li><a></a></li>
+                <li><a></a></li>
+                <li><a></a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-envelope"></i></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li> <a class='send-report' href="#">Send email to account owner</a> </li>
+                    </ul>
+                </li>
+            </ul>
+            <div class="clearfix"></div>
+            -->
+            <% if @data_by_region.keys.empty? %>
+              <div class="alert alert-info" role="alert">Congratulations! All your <%= page_label %> are tagged correctly. </div>
+            <% end %>
 
-    <ul id='regions' class="nav nav-tabs" role="tablist">
-      <% @data_by_region.keys.each_with_index do |region, i| %>
-        <li region='<%= region %>' role="presentation" class="<%= i == 0 ? "active": "" %>">
-          <a href="#<%= region %>" aria-controls="<%= region %>" role="tab" data-toggle="tab"><%= region %> <span class="label label-default"> <%= @data_by_region[region].size %></span> </a>
-        </li>
-      <% end %>
-    </ul>
+            <ul id='regions' class="nav nav-tabs" role="tablist">
+              <% @data_by_region.keys.each_with_index do |region, i| %>
+                <li region='<%= region %>' role="presentation" class="<%= i == 0 ? "active": "" %>">
+                  <a href="#<%= region %>" aria-controls="<%= region %>" role="tab" data-toggle="tab"><%= region %> <span class="label label-default"> <%= @data_by_region[region].size %></span> </a>
+                </li>
+              <% end %>
+            </ul>
 
-    <%= render "shared/item_tag_dialog" %>
+            <%= render "shared/item_tag_dialog" %>
 
-    <div class="tab-content">
-      <% @data_by_region.keys.each_with_index do |region, i| %>
-        <div role="tabpanel" class="tab-pane <%= i == 0 ? "active": "" %>" id="<%= region %>">
-            <%= yield region %>
+            <div class="tab-content">
+              <% @data_by_region.keys.each_with_index do |region, i| %>
+                <div role="tabpanel" class="tab-pane <%= i == 0 ? "active": "" %>" id="<%= region %>">
+                    <%= yield region %>
+                </div>
+              <% end %>
+            </div>
         </div>
-      <% end %>
     </div>
-  </div>
 </div>

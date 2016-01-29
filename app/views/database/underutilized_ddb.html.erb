@@ -1,11 +1,9 @@
-content_for
-
 <%= render layout: 'janitor/report_layout' do |region| %>
   <table class="table table-striped">
     <thead>
       <tr>
         <th></th>
-        <th></th>
+        <th><input class='select-all' type="checkbox"></th>
         <th>Table Name</th>
         <th>Daily Cost</th>
         <th>Utilization, %</th>
@@ -15,14 +13,14 @@ content_for
         <th>Launch Time</th>
       </tr>
     </thead>
-    <% @data_by_region[region].sort_by { |i| i["daily_cost"] }.reverse.each do |item| %>
+    <% @data_by_region[region].sort_by { |d| d["daily_cost"] }.reverse.each do |item| %>
       <tr>
         <td><%= render "shared/item_menu" %></td>
         <td>
           <%= render partial: "shared/item_checkbox", locals: { aws_object_id: item["table_name"] } %>
         </td>
         <td>
-          <a href='<%= ddb_link(region, item) %>'> <%= item["table_name"] %> </a>
+          <a href='<%= ddb_link(region, item["table_name"]) %>'> <%= item["table_name"] %> </a>
         </td>
         <td> <%= item["daily_cost"].to_f.round(2) %> </td>
         <td> <%= item["utilization"].to_f.round(2) %>%</td>

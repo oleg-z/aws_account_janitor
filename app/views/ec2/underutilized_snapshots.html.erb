@@ -48,7 +48,7 @@
             <thead>
               <tr>
                 <th></th>
-                <th></th>
+                <th><input class='select-all' type="checkbox"></th>
                 <th>Snapshot Id</th>
                 <th>Create Time</th>
                 <th>Size</th>
@@ -56,21 +56,20 @@
                 <th>Tags</th>
               </tr>
             </thead>
-            <% @data_by_region[region].each do |volume| %>
+            <% @data_by_region[region].each do |snapshot| %>
               <tr>
                 <td><%= render "shared/item_menu" %></td>
                 <td>
-                  <%= render partial: "shared/item_checkbox", locals: { aws_object_id: volume["volume_id"] } %>
+                  <%= render partial: "shared/item_checkbox", locals: { aws_object_id: snapshot["volume_id"] } %>
                 </td>
                 <td>
-                  <a href='https://console.aws.amazon.com/ec2/v2/home?region=<%= region %>#Volumes:search=<%= volume["volume_id"] %>'>
-                    <%= volume["snapshot_id"] %>
-                  </a> </td>
-                <td> <%= Time.parse(volume["create_time"]).strftime("%F") %> </td>
-                <td> <%= volume["volume_size"] %> </td>
-                <td> <%= volume["daily_cost"] %> </td>
+                  <a href='<%= ec2_snapshot_link(region, snapshot["snapshot_id"]) %>'> <%= snapshot["snapshot_id"] %> </a>
+                </td>
+                <td> <%= Time.parse(snapshot["create_time"]).strftime("%F") %> </td>
+                <td> <%= snapshot["volume_size"] %> </td>
+                <td> <%= snapshot["daily_cost"] %> </td>
                 <td>
-                    <%= render partial: 'janitor/tags', locals: { tags: volume["tags"] } %>
+                    <%= render partial: 'janitor/tags', locals: { tags: snapshot["tags"] } %>
                 </td>
               </tr>
             <% end %>

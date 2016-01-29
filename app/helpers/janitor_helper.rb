@@ -9,16 +9,26 @@ module JanitorHelper
     end
   end
 
-  def ddb_link(region, ddb)
-    "https://console.aws.amazon.com/dynamodb/home?region=#{region}#tables:selected=#{ddb["table_name"]}"
+  def ddb_link(region, id)
+    "https://console.aws.amazon.com/dynamodb/home?region=#{region}#tables:selected=#{id}"
   end
 
   def rds_link(region, id)
     "https://#{region}.console.aws.amazon.com/rds/home?region=#{region}#dbinstances:id=#{id};sf=all"
   end
 
-  def ec2_instance_link(region, id)
-    "https://console.aws.amazon.com/ec2/v2/home?region=#{region}#Instances:search=#{id}"
+  def ec2_instance_link(region, ids)
+    ids = [ids] unless ids.kind_of?(Array)
+    "https://console.aws.amazon.com/ec2/v2/home?region=#{region}#Instances:search=#{ids.join(",")}"
+  end
+
+  def ec2_volume_link(region, ids)
+    ids = [ids] unless ids.kind_of?(Array)
+    "https://console.aws.amazon.com/ec2/v2/home?region=#{region}#Volumes:search=#{ids.join(",")}"
+  end
+
+  def ec2_snapshot_link(region, id)
+    "https://console.aws.amazon.com/ec2/v2/home?region=#{region}#Snapshots:visibility=owned-by-me;search=#{id}"
   end
 
   def format_time(string)
