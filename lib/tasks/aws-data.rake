@@ -13,7 +13,7 @@ namespace :aws_data do
     end
 
     task_frequency = {
-      fetch_internal: 1800,
+      managed_objects: 1800,
       billing: 3600 * 3
     }
 
@@ -21,10 +21,11 @@ namespace :aws_data do
     loop do
       task_frequency.each do |task_name, frequency|
         last_execution[task_name] ||= Time.now - frequency - 1
+
         next if Time.now - last_execution[task_name] < frequency
 
         begin
-          Rake::Task["aws_data:#{task_name}"].invoke
+          Rake::Task["aws_data:#{task_name}"].execute
         rescue => e
           Rails.logger.error("Failed to complete action '#{task_name}' block: #{e}")
         ensure
@@ -44,10 +45,7 @@ namespace :aws_data do
     Rails.logger.level = Logger.const_get((ENV['LOG_LEVEL'] || 'info').upcase)
   end
 
-  task :fetch_internal => [:logger, :ec2] do
-  end
-
-  task :ec2 do
+  task :managed_objects do
     AwsAccount.all.each do |account|
       JanitorUi::SUPPORTED_AWS_REGIONS.each do |region|
         janitor = error_trap(nil) {
