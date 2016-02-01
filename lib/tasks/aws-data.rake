@@ -79,7 +79,7 @@ namespace :aws_data do
           account_number: account.identifier,
           billing_bucket: account.billing_bucket
         )
-        janitor.billing[:usage_by_account].each do |account_id, daily_data|
+        janitor.billing(from: Time.now)[:usage_by_account].each do |account_id, daily_data|
           daily_data.each do |date, value|
             r = AwsUsageRecord.find_by(data_type: 'daily_cost', account_id: account_id, date: date)
 
@@ -102,7 +102,7 @@ namespace :aws_data do
       rescue Aws::AutoScaling::Errors::InvalidClientTokenId => _e
         Rails.logger.error("Failed to switch to '#{account.alias}' account")
       rescue => e
-        log_action(account, region, "Failed to complete action block: #{e}")
+        Rails.logger.error("Failed to complete action block: #{e}")
       end
     end
   end

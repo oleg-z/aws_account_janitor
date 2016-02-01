@@ -5,8 +5,10 @@ module AwsAccountJanitor
       @s3_bucket = args[:billing_bucket]
     end
 
-    def report
-      get_billing_data(from: Time.now, to: Time.now)
+    def report(args)
+      from = args[:from] || Time.now
+      to = args[:to] || Time.now
+      get_billing_data(from: from, to: to)
     end
 
     private

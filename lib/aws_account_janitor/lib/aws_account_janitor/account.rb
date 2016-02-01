@@ -31,9 +31,9 @@ module AwsAccountJanitor
       end
     end
 
-    def billing
+    def billing(args = {})
       return {} if @billing.nil?
-      return @billing.report
+      return @billing.report(from: args[:from], to: args[:to])
     end
 
     def ec2
