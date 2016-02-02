@@ -15,8 +15,7 @@ class App.Dashboard extends App.Base
         for date, cost of v.spending
             color = true ? '#008000' : '#008000'
             d = new Date(date)
-            points.push(["#{d.getMonth()+1}/#{d.getUTCDate()}", parseInt(cost), parseInt(v.threshold), "color: #{color}"])
+            points.push(["#{d.getUTCMonth()+1}/#{d.getUTCDate()}", parseInt(cost), parseInt(v.threshold), "color: #{color}"])
 
         new Element.GoogleChart(account).draw(points: points, legend_position: 'none', haxis_ticks: Math.ceil(points.length/8))
     return
-
