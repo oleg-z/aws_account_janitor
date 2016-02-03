@@ -13,8 +13,8 @@ namespace :aws_data do
     end
 
     task_frequency = {
-      managed_objects: 1800,
-      billing: 3600 * 3
+      billing: 3600 * 3,
+      managed_objects: 3600
     }
 
     last_execution = {}
@@ -43,14 +43,16 @@ namespace :aws_data do
       Rails.logger = Logger.new(Rails.root.join('log', 'daemon.log'))
     end
     Rails.logger.level = Logger.const_get((ENV['LOG_LEVEL'] || 'info').upcase)
+    AwsAccountJanitor::Logger.set(Rails.logger)
   end
 
   task :managed_objects do
     AwsAccount.all.each do |account|
+      next unless valid_credentials?(account)
       JanitorUi::SUPPORTED_AWS_REGIONS.each do |region|
         janitor = error_trap(nil) {
           switch_account(account, region)
-          janitor = AwsAccountJanitor::Account.new(region: region, account_number: account.identifier)
+          AwsAccountJanitor::Account.new(region: region, account_number: account.identifier)
         }
         next unless janitor
 
@@ -73,13 +75,14 @@ namespace :aws_data do
       next if account.billing_bucket.to_s.strip == ""
       @credentials = {}
       begin
-        switch_account(account, "us-east-1")
+        region = "us-east-1"
+        switch_account(account, region)
         janitor = AwsAccountJanitor::Account.new(
-          region: "us-east-1",
+          region: region,
           account_number: account.identifier,
           billing_bucket: account.billing_bucket
         )
-        janitor.billing(from: Time.now)[:usage_by_account].each do |account_id, daily_data|
+        janitor.billing(to: Time.now)[:usage_by_account].each do |account_id, daily_data|
           daily_data.each do |date, value|
             r = AwsUsageRecord.find_by(data_type: 'daily_cost', account_id: account_id, date: date)
 
@@ -122,6 +125,10 @@ namespace :aws_data do
 
   def log_action(account, region, message)
     Rails.logger.info("#{account.alias}@#{region}: #{message}")
+  end
+
+  def valid_credentials?(account)
+    !(account.access_key.to_s.empty? || account.secret_key.to_s.empty?)
   end
 
   def switch_account(account, region)

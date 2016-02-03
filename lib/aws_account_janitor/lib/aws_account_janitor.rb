@@ -3,6 +3,7 @@ require_relative 'extensions/struct'
 require_relative 'aws_account_janitor/version'
 require_relative 'aws_account_janitor/account'
 require_relative 'aws_account_janitor/global'
+require_relative 'aws_account_janitor/logger'
 
 module AwsAccountJanitor
   SUPPORTED_AWS_REGIONS = %w(us-east-1 us-west-1 us-west-2 eu-west-1 eu-central-1 sa-east-1 ap-southeast-2 ap-southeast-1 ap-northeast-1 ap-northeast-2)

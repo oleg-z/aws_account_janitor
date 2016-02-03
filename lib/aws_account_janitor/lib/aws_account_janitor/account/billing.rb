@@ -5,6 +5,10 @@ module AwsAccountJanitor
       @s3_bucket = args[:billing_bucket]
     end
 
+    def logger
+      AwsAccountJanitor::Logger.get
+    end
+
     def report(args)
       from = args[:from] || Time.now
       to = args[:to] || Time.now
@@ -52,14 +56,14 @@ module AwsAccountJanitor
       s3 = Aws::S3::Client.new(region: 'us-east-1', profile: @account_id)
       local_zip = "./#{@account_id}-aws-billing-detailed.csv.zip"
       remote_zip = "#{@account_id}-aws-billing-detailed-line-items-#{year_month}.csv.zip"
-      puts "Getting billing zip file: #{File.join(@s3_bucket, remote_zip)}"
+      logger.info("Getting billing zip file: #{File.join(@s3_bucket, remote_zip)}")
       s3.get_object(
         response_target: local_zip,
         bucket: @s3_bucket,
         key: remote_zip
       ).body
 
-      puts "Unpacking billing zip file to #{local_zip}.unzipped"
+      logger.debug("Unpacking billing zip file to #{local_zip}.unzipped")
       `unzip -p #{local_zip} > #{local_zip}.unzipped`
       File.unlink(local_zip)
       "#{local_zip}.unzipped"
@@ -73,7 +77,7 @@ module AwsAccountJanitor
 
       [timeframe[:from].strftime("%Y-%m"), timeframe[:to].strftime("%Y-%m")].uniq.each do |year_month|
         bill = zip_file(year_month)
-        puts "Processing data for #{year_month}"
+        logger.info("Processing data for #{year_month}")
         open(bill) do |csv|
           parse_headers = true
 
